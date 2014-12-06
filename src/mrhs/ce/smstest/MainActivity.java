@@ -27,6 +27,16 @@ public class MainActivity extends Activity {
     Button send ;
     EditText messageText,phoneNum;
     
+    // Constants related to the condition of the file and the sdcard
+    
+    Integer file_Exists_In_sd ;
+    Integer file_is_created_in_sd;
+    Integer error_creating_in_sd;
+    Integer no_sd_available_use_internal;
+    Integer no_text_file_in_sd;
+    Integer no_text_file_in_internal;
+    Integer text_file_in_sd;
+    Integer text_file_in_internal;
 	
     
 	
@@ -34,6 +44,16 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         log("Entered on create");
+        
+        file_Exists_In_sd=0;
+        file_is_created_in_sd=1;
+        error_creating_in_sd=2;
+        no_sd_available_use_internal=3;
+        no_text_file_in_sd=4;
+        no_text_file_in_internal=5;
+        text_file_in_sd=6;
+        text_file_in_internal=7;
+        
         setContentView(R.layout.activity_main);
         send=(Button)findViewById(R.id.sendButton);
         messageText=(EditText)findViewById(R.id.messageText);
@@ -151,12 +171,13 @@ public class MainActivity extends Activity {
     	Log.d("Main Activity", text);
     }
     
-    public Integer createDirectory(){ //0 --> the file exists in the sdcard 1--> exists in the root 2 --> is created in the sdcard 3 --> is created in the root 4 --> Error
-    	if(android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)){
+    public Integer createDirectory(){ 
+    	if(android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)
+    			&& !android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED_READ_ONLY)){
     		File dir= new File (Environment.getExternalStorageDirectory().toString()+"شماره های مخاطبان/");
     		if(dir.exists()){
     			log(Environment.getExternalStorageDirectory().toString()+"شماره های مخاطبان/"+" exists");
-    			return 0;
+    			return file_Exists_In_sd;
     		}    		
     		else{
     			try{
@@ -164,46 +185,28 @@ public class MainActivity extends Activity {
     					log(Environment.getExternalStorageDirectory().toString()+"شماره های مخاطبان/"+
     				" is created in the sdcard");
     					Toast.makeText(this, "فایل (شماره های مخاطبان ) با موفقیت در حافظه خارجی ساخته شد", Toast.LENGTH_LONG).show();
-    					return 2;
+    					return file_is_created_in_sd;
     				}
     				else{
     					log("The directory could not be created in the sdcard");
     					Toast.makeText(this, "اشکال در ساخت فایل در حافظه خارجی", Toast.LENGTH_LONG).show();
-    					return 4;
+    					return error_creating_in_sd;
     				}
     			}catch(Exception e){
     				e.printStackTrace();
-    				return 4;
+    				return error_creating_in_sd;
     			}
     		}
     	}
-    	else{
-    		File dir= new File (getFilesDir().toString()+"شماره های مخاطبان/");
-    		if(dir.exists()){
-    			log(getFilesDir().toString().toString()+"شماره های مخاطبان/"+" exists");
-    			return 1;
-    		}    		
-    		else{
-    			try{
-    				if(dir.mkdir()){
-    					log(getFilesDir().toString().toString()+"شماره های مخاطبان/"+
-    				" is created in the sdcard");
-    					Toast.makeText(this, "فایل (شماره های مخاطبان ) با موفقیت در حافظه داخلی ساخته شد", Toast.LENGTH_SHORT).show();
-    					Toast.makeText(this, "The address is : "+getFilesDir().toString().toString()+"شماره های مخاطبان/", Toast.LENGTH_LONG).show();
-    					return 3;
-    				}
-    				else{
-    					log("The directory could not be created in the root");
-    					Toast.makeText(this, "اشکال در ساخت فایل در حافظه داخلی", Toast.LENGTH_LONG).show();
-    					return 4;
-    				}
-    			}catch(Exception e){
-    				e.printStackTrace();
-    				return 4;
-    			}
-    		}
-    	}
+    	else
+    		return no_sd_available_use_internal;
     }
-    
-    
+    public Integer chkTextFile(Integer place){ // This function checks 
+    	//the sdcard or the internal memory for finding the text files and returns the specific condition
+    	return 0;
+    	
+    }
 }
+    
+    
+

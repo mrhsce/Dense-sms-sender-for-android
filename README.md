@@ -7,9 +7,9 @@ This application automatically send the determined text to the phone numbers ins
 
 Things to do ->
 	First phase:
-	- check to see if there exist any sd card
-	- if sdcard exists make a directory inside the sdcard else inside the internal memory called "شماره های مخاطبان"
-	- The program checks the directory and make a combo box filled with the names of the text files inside the directory
+	- ✔ check to see if there exist any sd card
+	- ✔ if sdcard exists make a directory inside the sdcard else inside the internal memory called "شماره های مخاطبان"
+	- The program checks the directory(if it has sdcard else the root) and make a combo box filled with the names of the text files inside the directory
 	- when any text file is selected the count of the phone numbers inside it is shown in a small label adjacent to it
 	- when the text of the message editText is changed the number of the messages is shown alike phone numbers
 	it means instead of EditText there should be a combo box  * If it is empty the combo box should write "هیچ مخاطبی موجود نیست"
