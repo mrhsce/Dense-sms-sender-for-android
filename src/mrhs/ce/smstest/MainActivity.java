@@ -1,8 +1,10 @@
 package mrhs.ce.smstest;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -15,7 +17,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
     
@@ -74,12 +76,12 @@ public class MainActivity extends Activity {
     	}
     }
     
-    private void sendSMS(String message,String phone){
+    @SuppressWarnings("deprecation")
+	private void sendSMS(String message,String phone){
     	String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
         
-        @SuppressWarnings("deprecation")
-		SmsManager sms = SmsManager.getDefault();
+        SmsManager sms = SmsManager.getDefault();
         ArrayList<String> mesgParts= sms.divideMessage(message);
         int numPart = mesgParts.size();
         log(Integer.toString(numPart)+" message will be sent..");
@@ -99,6 +101,7 @@ public class MainActivity extends Activity {
     }
     
     class sentReciever extends BroadcastReceiver{
+		@SuppressWarnings("deprecation")
 		@Override
 		public void onReceive(Context arg0, Intent arg1) {
 			// TODO Auto-generated method stub
@@ -147,5 +150,60 @@ public class MainActivity extends Activity {
     private void log(String text){
     	Log.d("Main Activity", text);
     }
+    
+    public Integer createDirectory(){ //0 --> the file exists in the sdcard 1--> exists in the root 2 --> is created in the sdcard 3 --> is created in the root 4 --> Error
+    	if(android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)){
+    		File dir= new File (Environment.getExternalStorageDirectory().toString()+"شماره های مخاطبان/");
+    		if(dir.exists()){
+    			log(Environment.getExternalStorageDirectory().toString()+"شماره های مخاطبان/"+" exists");
+    			return 0;
+    		}    		
+    		else{
+    			try{
+    				if(dir.mkdir()){
+    					log(Environment.getExternalStorageDirectory().toString()+"شماره های مخاطبان/"+
+    				" is created in the sdcard");
+    					Toast.makeText(this, "فایل (شماره های مخاطبان ) با موفقیت در حافظه خارجی ساخته شد", Toast.LENGTH_LONG).show();
+    					return 2;
+    				}
+    				else{
+    					log("The directory could not be created in the sdcard");
+    					Toast.makeText(this, "اشکال در ساخت فایل در حافظه خارجی", Toast.LENGTH_LONG).show();
+    					return 4;
+    				}
+    			}catch(Exception e){
+    				e.printStackTrace();
+    				return 4;
+    			}
+    		}
+    	}
+    	else{
+    		File dir= new File (getFilesDir().toString()+"شماره های مخاطبان/");
+    		if(dir.exists()){
+    			log(getFilesDir().toString().toString()+"شماره های مخاطبان/"+" exists");
+    			return 1;
+    		}    		
+    		else{
+    			try{
+    				if(dir.mkdir()){
+    					log(getFilesDir().toString().toString()+"شماره های مخاطبان/"+
+    				" is created in the sdcard");
+    					Toast.makeText(this, "فایل (شماره های مخاطبان ) با موفقیت در حافظه داخلی ساخته شد", Toast.LENGTH_SHORT).show();
+    					Toast.makeText(this, "The address is : "+getFilesDir().toString().toString()+"شماره های مخاطبان/", Toast.LENGTH_LONG).show();
+    					return 3;
+    				}
+    				else{
+    					log("The directory could not be created in the root");
+    					Toast.makeText(this, "اشکال در ساخت فایل در حافظه داخلی", Toast.LENGTH_LONG).show();
+    					return 4;
+    				}
+    			}catch(Exception e){
+    				e.printStackTrace();
+    				return 4;
+    			}
+    		}
+    	}
+    }
+    
     
 }
