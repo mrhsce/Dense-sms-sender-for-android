@@ -8,20 +8,18 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <EditText
-        android:id="@+id/phoneNumText"
+    <Spinner
+        android:id="@+id/phoneNumSpinner"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:hint="Please insert the phone number"
-        android:inputType="phone"
-       android:layout_alignParentTop="true"/>
+        android:layout_height="wrap_content"        
+       	android:layout_alignParentTop="true"/>
     
     <EditText
         android:id="@+id/messageText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="Please insert the message text here"
-        android:layout_below="@+id/phoneNumText" />
+        android:layout_below="@+id/phoneNumSpinner" />
     <Button
         android:id="@+id/sendButton"
         android:layout_width="wrap_content"

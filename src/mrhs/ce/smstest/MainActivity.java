@@ -1,8 +1,11 @@
 package mrhs.ce.smstest;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 
+import android.R.integer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
@@ -17,6 +20,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -25,39 +29,39 @@ public class MainActivity extends Activity {
     BroadcastReceiver deliveryBroadcastReciever = new deliverReciever();
    
     Button send ;
-    EditText messageText,phoneNum;
+    EditText messageText;
+    Spinner phoneNumSpinner;
     
     // Constants related to the condition of the file and the sdcard
     
-    Integer file_Exists_In_sd ;
-    Integer file_is_created_in_sd;
-    Integer error_creating_in_sd;
-    Integer no_sd_available_use_internal;
-    Integer no_text_file_in_sd;
-    Integer no_text_file_in_internal;
-    Integer text_file_in_sd;
-    Integer text_file_in_internal;
+    Integer file_Exists ;
+    Integer file_is_created;
+    Integer error_creating;
+    Integer no_sd_available;
+    Integer no_text_file;
+    Integer text_file_exists;
 	
-    
+    ArrayList<String> fileNames;
+    ArrayList<ArrayList<String>> phoneNums;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         log("Entered on create");
         
-        file_Exists_In_sd=0;
-        file_is_created_in_sd=1;
-        error_creating_in_sd=2;
-        no_sd_available_use_internal=3;
-        no_text_file_in_sd=4;
-        no_text_file_in_internal=5;
-        text_file_in_sd=6;
-        text_file_in_internal=7;
+        file_Exists=0;
+        file_is_created=1;
+        error_creating=2;
+        no_sd_available=3;
+        no_text_file=4;
+        text_file_exists=5;        
+        
+        createPhonelist();
         
         setContentView(R.layout.activity_main);
         send=(Button)findViewById(R.id.sendButton);
         messageText=(EditText)findViewById(R.id.messageText);
-        phoneNum=(EditText)findViewById(R.id.phoneNumText);
+        phoneNumSpinner=(Spinner)findViewById(R.id.phoneNumSpinner);
         log("All items are initiated oncreate");
         send.setOnClickListener(new View.OnClickListener() {
 			
@@ -65,10 +69,34 @@ public class MainActivity extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				log("The message text is : "+messageText.getText().toString());
-				log("The phone number is : "+phoneNum.getText().toString());
-				sendSMS(messageText.getText().toString(), phoneNum.getText().toString());
+				//log("The phone number is : "+phoneNum.getText().toString());
+				//sendSMS(messageText.getText().toString(), phoneNum.getText().toString());
 			}
 		});
+    }
+    private void createPhonelist(){
+    	fileNames=new ArrayList<String>();
+        phoneNums=new ArrayList<ArrayList<String>>();
+        Integer condition;
+        if((condition=createDirectory())==file_Exists){
+        	log("The file exists");
+        	fileNames= getTextFileNames();
+        	if(fileNames.size()>0){
+        		log(Integer.toString(fileNames.size())+" text files are found");
+        		phoneNums=getTextFileContents(fileNames);
+        		for(int i=0;i<phoneNums.size();i++){
+        			log("The text file "+String.valueOf(i)+"has"+Integer.toString(phoneNums.get(i).size())+"numbers");
+        			if(phoneNums.get(i).size()>0)
+        				log("The first one is "+phoneNums.get(i).get(0));
+        		}
+        	}
+        	else{
+        		Toast.makeText(this, "هیچ فایل متنی در فولدر مورد نظر موجود نیست", Toast.LENGTH_LONG).show();        
+        	}
+        }
+        else if(condition==file_is_created){
+    		Toast.makeText(this, "لطفا فایل شماره ها را درون فولدر (شماره های مخاطبان) قرار دهید", Toast.LENGTH_LONG).show();  
+        }
     }
     @Override
     protected void onPause() {
@@ -97,7 +125,7 @@ public class MainActivity extends Activity {
     }
     
     @SuppressWarnings("deprecation")
-	private void sendSMS(String message,String phone){
+	private void sendSMS(String message,ArrayList<String> phone){
     	String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
         
@@ -116,7 +144,7 @@ public class MainActivity extends Activity {
         registerReceiver(sendBroadcastReciever, new IntentFilter(SENT));
         registerReceiver(deliveryBroadcastReciever, new IntentFilter(DELIVERED));
         
-        sms.sendMultipartTextMessage(phone, null, mesgParts, sentPI, deliveredPI);
+        //sms.sendMultipartTextMessage(phone, null, mesgParts, sentPI, deliveredPI);
         
     }
     
@@ -174,36 +202,63 @@ public class MainActivity extends Activity {
     public Integer createDirectory(){ 
     	if(android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)
     			&& !android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED_READ_ONLY)){
-    		File dir= new File (Environment.getExternalStorageDirectory().toString()+"شماره های مخاطبان/");
+    		File dir= new File (Environment.getExternalStorageDirectory().toString()+
+    				File.separator+"شماره های مخاطبان"+File.separator);
     		if(dir.exists()){
-    			log(Environment.getExternalStorageDirectory().toString()+"شماره های مخاطبان/"+" exists");
-    			return file_Exists_In_sd;
+    			log(Environment.getExternalStorageDirectory().toString()+"/شماره های مخاطبان/"+" exists");
+    			return file_Exists;
     		}    		
     		else{
     			try{
-    				if(dir.mkdir()){
-    					log(Environment.getExternalStorageDirectory().toString()+"شماره های مخاطبان/"+
+    				if(dir.mkdirs()){
+    					log(Environment.getExternalStorageDirectory().toString()+"/شماره های مخاطبان/"+
     				" is created in the sdcard");
     					Toast.makeText(this, "فایل (شماره های مخاطبان ) با موفقیت در حافظه خارجی ساخته شد", Toast.LENGTH_LONG).show();
-    					return file_is_created_in_sd;
+    					return file_is_created;
     				}
     				else{
     					log("The directory could not be created in the sdcard");
     					Toast.makeText(this, "اشکال در ساخت فایل در حافظه خارجی", Toast.LENGTH_LONG).show();
-    					return error_creating_in_sd;
+    					return error_creating;
     				}
     			}catch(Exception e){
     				e.printStackTrace();
-    				return error_creating_in_sd;
+    				return error_creating;
     			}
     		}
     	}
     	else
-    		return no_sd_available_use_internal;
+    		return no_sd_available;
     }
-    public Integer chkTextFile(Integer place){ // This function checks 
-    	//the sdcard or the internal memory for finding the text files and returns the specific condition
-    	return 0;
+    public ArrayList<String> getTextFileNames(){ // Finds the text files in the specific folder and returns the names
+    	File dir= new File (Environment.getExternalStorageDirectory().toString()+
+				File.separator+"شماره های مخاطبان"+File.separator);
+    	File[] files = dir.listFiles();
+    	ArrayList<String> addrList=new ArrayList<String>();
+    	for(File file : files){
+    		if(file.isFile() && file.getName().endsWith(".txt"))
+    			addrList.add(file.getAbsolutePath());
+    	}
+    	return addrList;
+    	
+    }
+    public ArrayList<ArrayList<String>> getTextFileContents(ArrayList<String> addrList){ // returns the contents of the text files based on the names list
+    	ArrayList<ArrayList<String>> phoneList=new ArrayList<ArrayList<String>>();
+    	for(int i=0 ; i<addrList.size() ; i++){
+    		phoneList.add(new ArrayList<String>());
+    		File file=new File(addrList.get(i));
+    		try{
+    			BufferedReader br = new BufferedReader(new FileReader(file));
+    			String line;
+    			while ((line=br.readLine())!= null){
+    				if(line.matches("0([0-9]){10}"))
+    					phoneList.get(i).add(line);
+    			}
+    		}catch(Exception e){
+    			e.printStackTrace();
+    		}
+    	}
+    	return phoneList;
     	
     }
 }
