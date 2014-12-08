@@ -8,18 +8,38 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <Spinner
+   <LinearLayout 
+       android:id="@+id/linlayout1"
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:layout_alignParentTop="true"
+       android:orientation="horizontal">
+   
+	<Spinner
         android:id="@+id/phoneNumSpinner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"        
-       	android:layout_alignParentTop="true"/>
-    
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_weight="4"/>
+
+	<TextView
+	    android:id="@+id/phoneCountLabel"
+	    android:layout_width="0dp"
+	    android:layout_height="fill_parent"
+	    android:gravity="center"
+	    android:text="300\nشماره"
+	    android:textAppearance="?android:attr/textAppearanceSmall"
+	    android:textSize="20sp"
+	    android:layout_weight="1" />
+    	
+    </LinearLayout>
     <EditText
         android:id="@+id/messageText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="Please insert the message text here"
-        android:layout_below="@+id/phoneNumSpinner" />
+        android:layout_below="@id/linlayout1"
+         />
     <Button
         android:id="@+id/sendButton"
         android:layout_width="wrap_content"
@@ -27,5 +47,17 @@
         android:text="SEND"
         android:layout_below="@+id/messageText" 
         android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/messageCountLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/messageText"
+        android:layout_toRightOf="@id/sendButton"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="0\nپیام"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="20sp" />
 
 </RelativeLayout>

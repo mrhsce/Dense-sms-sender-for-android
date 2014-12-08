@@ -14,8 +14,8 @@ Things to do ->
 	- ✔ when any text file is selected the count of the phone numbers inside it is shown in a small label adjacent to it
 	- when the text of the message editText is changed the number of the messages is shown alike phone numbers
 	- Based on the size of the message the application shows the number of sent and delivered messages
-	- when the send button is pressed the edit text becomes empty and the text of the previous message will be shown in a new activity
-	and in it should be two small numbers indicating the count of sent and delivered
+	- when the send button is pressed the edit text becomes empty and the text of the previous message will be shown in a label
+	and behind it should be two small numbers indicating the count of sent and delivered
 	- as long as the number of the sent and delivered messages hasn't reached the maximum there should be a small animation
 	running for each
 	- Use branched weights for the gui

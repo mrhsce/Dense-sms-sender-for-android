@@ -15,12 +15,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.telephony.gsm.SmsManager;
+import android.telephony.gsm.SmsMessage;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -30,7 +38,9 @@ public class MainActivity extends Activity {
    
     Button send ;
     EditText messageText;
-    Spinner phoneNumSpinner;
+    Spinner phoneNumsArraypinner;
+    TextView phoneCountLabel;
+    TextView messageCountLabel;
     
     // Constants related to the condition of the file and the sdcard
     
@@ -41,8 +51,8 @@ public class MainActivity extends Activity {
     Integer no_text_file;
     Integer text_file_exists;
 	
-    ArrayList<String> fileNames;
-    ArrayList<ArrayList<String>> phoneNums;
+    ArrayList<String> fileNamesArray;
+    ArrayList<ArrayList<String>> phoneNumsArray;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +68,39 @@ public class MainActivity extends Activity {
         
         createPhonelist();
         
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main); 
+        
         send=(Button)findViewById(R.id.sendButton);
-        messageText=(EditText)findViewById(R.id.messageText);
-        phoneNumSpinner=(Spinner)findViewById(R.id.phoneNumSpinner);
+        phoneCountLabel=(TextView)findViewById(R.id.phoneCountLabel);
+        messageCountLabel=(TextView)findViewById(R.id.messageCountLabel);
+        messageText=(EditText)findViewById(R.id.messageText);        
         log("All items are initiated oncreate");
+        settingUpTheSpinner();
+        
+        messageText.addTextChangedListener(new TextWatcher() {
+			
+					
+			@Override
+			public void afterTextChanged(Editable arg0) {
+				// TODO Auto-generated method stub
+				setMessageCount(arg0.toString());
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence arg0, int arg1,
+					int arg2, int arg3) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+					int arg3) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
         send.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -74,20 +112,31 @@ public class MainActivity extends Activity {
 			}
 		});
     }
+    private void settingUpTheSpinner(){
+    	phoneNumsArraypinner=(Spinner)findViewById(R.id.phoneNumSpinner);
+        ArrayAdapter<String> adaptor=new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_spinner_item,fileNamesArray);
+        adaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        phoneNumsArraypinner.setAdapter(adaptor);
+        phoneNumsArraypinner.setOnItemSelectedListener(new spinnerListener());
+        if(phoneNumsArray.size()>0)
+        	setPhoneCount(0);
+        else
+        	phoneCountLabel.setText("0\nشماره");
+    }
     private void createPhonelist(){
-    	fileNames=new ArrayList<String>();
-        phoneNums=new ArrayList<ArrayList<String>>();
+    	fileNamesArray=new ArrayList<String>();
+        phoneNumsArray=new ArrayList<ArrayList<String>>();
         Integer condition;
         if((condition=createDirectory())==file_Exists){
         	log("The file exists");
-        	fileNames= getTextFileNames();
-        	if(fileNames.size()>0){
-        		log(Integer.toString(fileNames.size())+" text files are found");
-        		phoneNums=getTextFileContents(fileNames);
-        		for(int i=0;i<phoneNums.size();i++){
-        			log("The text file "+String.valueOf(i)+"has"+Integer.toString(phoneNums.get(i).size())+"numbers");
-        			if(phoneNums.get(i).size()>0)
-        				log("The first one is "+phoneNums.get(i).get(0));
+        	fileNamesArray= getTextfileNames();
+        	if(fileNamesArray.size()>0){
+        		log(Integer.toString(fileNamesArray.size())+" text files are found");
+        		phoneNumsArray=getTextFileContents(fileNamesArray);
+        		for(int i=0;i<phoneNumsArray.size();i++){
+        			log("The text file "+String.valueOf(i)+"has"+Integer.toString(phoneNumsArray.get(i).size())+"numbers");
+        			if(phoneNumsArray.get(i).size()>0)
+        				log("The first one is "+phoneNumsArray.get(i).get(0));
         		}
         	}
         	else{
@@ -187,7 +236,33 @@ public class MainActivity extends Activity {
     		}
     	}
     }
+    class spinnerListener implements  OnItemSelectedListener{
 
+		@Override
+		public void onItemSelected(AdapterView<?> parent, View arg1, int pos,
+				long id) {
+			// TODO Auto-generated method stub
+			log("Item "+Integer.toString(pos)+" is selected");
+			setPhoneCount(pos);
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+    	
+    }
+    public void setPhoneCount(int pos){
+    	int count= phoneNumsArray.get(pos).size();
+    	phoneCountLabel.setText(Integer.toString(count)+"\nشماره");
+    	log(Integer.toString(count)+" is the number of the phone numbers");
+    }
+    
+    public void setMessageCount(String editableText){
+     	int num=SmsManager.getDefault().divideMessage(editableText).size();
+     	messageCountLabel.setText(Integer.toString(num)+"\nپیام");
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -230,14 +305,14 @@ public class MainActivity extends Activity {
     	else
     		return no_sd_available;
     }
-    public ArrayList<String> getTextFileNames(){ // Finds the text files in the specific folder and returns the names
+    public ArrayList<String> getTextfileNames(){ // Finds the text files in the specific folder and returns the names
     	File dir= new File (Environment.getExternalStorageDirectory().toString()+
 				File.separator+"شماره های مخاطبان"+File.separator);
     	File[] files = dir.listFiles();
     	ArrayList<String> addrList=new ArrayList<String>();
     	for(File file : files){
     		if(file.isFile() && file.getName().endsWith(".txt"))
-    			addrList.add(file.getAbsolutePath());
+    			addrList.add(file.getName());
     	}
     	return addrList;
     	
@@ -246,7 +321,8 @@ public class MainActivity extends Activity {
     	ArrayList<ArrayList<String>> phoneList=new ArrayList<ArrayList<String>>();
     	for(int i=0 ; i<addrList.size() ; i++){
     		phoneList.add(new ArrayList<String>());
-    		File file=new File(addrList.get(i));
+    		File file=new File(Environment.getExternalStorageDirectory().toString()+
+    				File.separator+"شماره های مخاطبان"+File.separator+addrList.get(i));
     		try{
     			BufferedReader br = new BufferedReader(new FileReader(file));
     			String line;
