@@ -25,11 +25,11 @@
 	<TextView
 	    android:id="@+id/phoneCountLabel"
 	    android:layout_width="0dp"
-	    android:layout_height="fill_parent"
+	    android:layout_height="wrap_content"
 	    android:gravity="center"
 	    android:text="300\nشماره"
 	    android:textAppearance="?android:attr/textAppearanceSmall"
-	    android:textSize="20sp"
+	    android:textSize="15sp"
 	    android:layout_weight="1" />
     	
     </LinearLayout>

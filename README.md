@@ -18,6 +18,7 @@ Things to do ->
 	and in it should be two small numbers indicating the count of sent and delivered
 	- as long as the number of the sent and delivered messages hasn't reached the maximum there should be a small animation
 	running for each
+	- Take care for when the message is null or no phone number is choosed
 	- Use branched weights for the gui
 	Second phase:
 	-Show exactly for which phone numbers message has been send and also for which has been delivered

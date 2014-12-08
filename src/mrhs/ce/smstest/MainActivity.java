@@ -5,15 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 
-import android.R.integer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+
 import android.telephony.gsm.SmsManager;
 import android.telephony.gsm.SmsMessage;
 import android.text.Editable;
@@ -22,7 +18,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,8 +28,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
     
-	BroadcastReceiver sendBroadcastReciever = new sentReciever();
-    BroadcastReceiver deliveryBroadcastReciever = new deliverReciever();
+	
    
     Button send ;
     EditText messageText;
@@ -53,6 +47,8 @@ public class MainActivity extends Activity {
 	
     ArrayList<String> fileNamesArray;
     ArrayList<ArrayList<String>> phoneNumsArray;
+    
+    Integer spinnerSelecetItem=-1;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,11 +103,22 @@ public class MainActivity extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				log("The message text is : "+messageText.getText().toString());
-				//log("The phone number is : "+phoneNum.getText().toString());
-				//sendSMS(messageText.getText().toString(), phoneNum.getText().toString());
+				sendSMS();
 			}
 		});
+    } 
+    
+	private void sendSMS(){   	
+        String text=messageText.getText().toString();
+    	Intent intent=new Intent(MainActivity.this,OnMessageSent.class);
+    	Bundle b=new Bundle();
+    	b.putString("message text", text);
+    	b.putStringArrayList("phone numbers", phoneNumsArray.get(spinnerSelecetItem));
+    	intent.putExtras(b);
+    	startActivity(intent);
     }
+        
+    
     private void settingUpTheSpinner(){
     	phoneNumsArraypinner=(Spinner)findViewById(R.id.phoneNumSpinner);
         ArrayAdapter<String> adaptor=new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_spinner_item,fileNamesArray);
@@ -146,96 +153,8 @@ public class MainActivity extends Activity {
         else if(condition==file_is_created){
     		Toast.makeText(this, "لطفا فایل شماره ها را درون فولدر (شماره های مخاطبان) قرار دهید", Toast.LENGTH_LONG).show();  
         }
-    }
-    @Override
-    protected void onPause() {
-    	// TODO Auto-generated method stub
-    	super.onPause();
-    	
-    	try{
-    		unregisterReceiver(sendBroadcastReciever);
-    		unregisterReceiver(deliveryBroadcastReciever);
-    		log(" both broadcast recievers are unregistered");
-    	}catch(Exception e){
-    		e.printStackTrace();
-    	}
-    }
-    @Override
-    protected void onDestroy() {
-    	// TODO Auto-generated method stub
-    	super.onDestroy();
-    	try{
-    		unregisterReceiver(sendBroadcastReciever);
-    		unregisterReceiver(deliveryBroadcastReciever);
-    		log(" both broadcast recievers are unregistered");
-    	}catch(Exception e){
-    		e.printStackTrace();
-    	}
-    }
+    }        
     
-    @SuppressWarnings("deprecation")
-	private void sendSMS(String message,ArrayList<String> phone){
-    	String SENT = "SMS_SENT";
-        String DELIVERED = "SMS_DELIVERED";
-        
-        SmsManager sms = SmsManager.getDefault();
-        ArrayList<String> mesgParts= sms.divideMessage(message);
-        int numPart = mesgParts.size();
-        log(Integer.toString(numPart)+" message will be sent..");
-        
-        ArrayList<PendingIntent> sentPI = new ArrayList<PendingIntent>(); //
-        ArrayList<PendingIntent> deliveredPI = new ArrayList<PendingIntent>(); //
-                   
-        for (int i=0 ; i<numPart; i++){
-        	sentPI.add(PendingIntent.getBroadcast(this, 0, new Intent(SENT), 0));
-        	deliveredPI.add(PendingIntent.getBroadcast(this, 0, new Intent(DELIVERED), 0));
-        }
-        registerReceiver(sendBroadcastReciever, new IntentFilter(SENT));
-        registerReceiver(deliveryBroadcastReciever, new IntentFilter(DELIVERED));
-        
-        //sms.sendMultipartTextMessage(phone, null, mesgParts, sentPI, deliveredPI);
-        
-    }
-    
-    class sentReciever extends BroadcastReceiver{
-		@SuppressWarnings("deprecation")
-		@Override
-		public void onReceive(Context arg0, Intent arg1) {
-			// TODO Auto-generated method stub
-			switch(getResultCode()){
-			case Activity.RESULT_OK:
-				log("Sms was sent");
-				break;
-			case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-				log("Genegic failure");
-				break;
-			case SmsManager.RESULT_ERROR_NO_SERVICE:
-				log("No service");
-                break;
-            case SmsManager.RESULT_ERROR_NULL_PDU:
-            	log("Null PDU");
-                break;
-            case SmsManager.RESULT_ERROR_RADIO_OFF:
-            	log("Radio off");
-                break;	
-			}
-		}
-	}
-	
-    class deliverReciever extends BroadcastReceiver{
-    	@Override
-    	public void onReceive(Context arg0, Intent arg1) {
-    		// TODO Auto-generated method stub
-    		switch(getResultCode()){
-    			case Activity.RESULT_OK:
-    				log("Message was successfully delivered");
-    				break;
-    			case Activity.RESULT_CANCELED:
-    				log("Message was not delivered");
-    				break;
-    		}
-    	}
-    }
     class spinnerListener implements  OnItemSelectedListener{
 
 		@Override
@@ -243,6 +162,7 @@ public class MainActivity extends Activity {
 				long id) {
 			// TODO Auto-generated method stub
 			log("Item "+Integer.toString(pos)+" is selected");
+			spinnerSelecetItem=pos;
 			setPhoneCount(pos);
 		}
 
@@ -270,10 +190,7 @@ public class MainActivity extends Activity {
         return true;
     }
     
-    private void log(String text){
-    	Log.d("Main Activity", text);
-    }
-    
+       
     public Integer createDirectory(){ 
     	if(android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)
     			&& !android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED_READ_ONLY)){
@@ -336,6 +253,9 @@ public class MainActivity extends Activity {
     	}
     	return phoneList;
     	
+    }
+    private void log(String text){
+    	Log.d("Main Activity", text);
     }
 }
     
