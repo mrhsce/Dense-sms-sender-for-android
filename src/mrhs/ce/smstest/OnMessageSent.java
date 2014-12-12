@@ -10,7 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.telephony.gsm.SmsManager;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -51,7 +51,6 @@ public class OnMessageSent extends Activity {
 		super.onDestroy();
 	}
 	
-	@SuppressWarnings("deprecation")
 	private void sendMessage(String text,ArrayList<String> phoneNumbers){
         SmsManager sms = SmsManager.getDefault();
         
@@ -79,7 +78,6 @@ public class OnMessageSent extends Activity {
 	
 	
 	class sentReciever extends BroadcastReceiver{
-		@SuppressWarnings("deprecation")
 		@Override
 		public void onReceive(Context arg0, Intent arg1) {
 			// TODO Auto-generated method stub

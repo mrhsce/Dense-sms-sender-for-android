@@ -60,4 +60,20 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="20sp" />
 
+    <Button
+        android:id="@+id/buttonAddUsingContacts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonAddManually"
+        android:layout_centerHorizontal="true"
+        android:text="اضافه کردن گروه از مخاطبان" />
+
+    <Button
+        android:id="@+id/buttonAddManually"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="اضافه کردن دستی" />
+
 </RelativeLayout>
