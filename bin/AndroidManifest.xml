@@ -34,6 +34,11 @@
             android:label="@string/title_activity_on_message_sent"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name="mrhs.ce.smstest.ContactPickerMulti"
+            android:label="title_activity_contact_picker_multi"
+            android:screenOrientation="portrait" >
+        </activity>
     </application>
 
 </manifest>

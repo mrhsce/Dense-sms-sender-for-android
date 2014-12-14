@@ -12,7 +12,7 @@ import android.util.Log;
 
 public class DatabaseHandler {
 	
-	private static  int DATABASE_VERSION=2;
+	private static  int DATABASE_VERSION=3;
 	private static final String DATABASE_NAME = "contactsManager";
 	private static final String TABLE_NAME = "contactGroups";
 	
@@ -56,7 +56,7 @@ public class DatabaseHandler {
 	}
 	public boolean delete(String groupName){
 		return db.delete(TABLE_NAME, "groupName = '"+groupName+"'", null)>0;
-	}
+	}	
 	
 	public String getName(String groupName,String phoneNum){
 		Cursor cursor=db.query(true, TABLE_NAME,
@@ -70,16 +70,15 @@ public class DatabaseHandler {
 	public Cursor getAllPhoneNums(){
 		Cursor cursor=db.query(true, TABLE_NAME,
 				new String[]{"phoneNum","name"}, null, null, null, null, "name desc", null);
-		if(cursor!=null)
-			cursor.moveToFirst();
+		
+		cursor.moveToFirst();
 		return cursor;
 	}	
 	
 	public Cursor getAllGroups(){
 		Cursor cursor=db.query(true, TABLE_NAME,
 				new String[]{"groupName"}, null, null, null, null, "groupName desc", null);
-		if(cursor!=null)
-			cursor.moveToFirst();
+		cursor.moveToFirst();
 		return cursor;
 	}
 	
@@ -99,10 +98,11 @@ public class DatabaseHandler {
 		ArrayList<String> list=new ArrayList<String>();
 		Cursor cursor=db.query(true, TABLE_NAME,
 				new String[]{"groupName"}, null, null, null, null, "groupName desc", null);
-		if(cursor!=null){
-			cursor.moveToFirst();
+		if(cursor.moveToFirst()){			
 			do{
+				log("BEFORE");
 				list.add(cursor.getString(0));
+				log("After");
 			}while(cursor.moveToNext());
 		}
 			
@@ -113,8 +113,7 @@ public class DatabaseHandler {
 		Cursor cursor=db.query(true, TABLE_NAME,
 				new String[]{"phoneNum" ,"name"}, "groupName = '"+
 						groupName+"'", null, null, null, " name desc", null);
-		if(cursor!=null){
-			cursor.moveToFirst();
+		if(cursor.moveToFirst()){			
 			do{
 				list.add(cursor.getString(0));
 			}while(cursor.moveToNext());

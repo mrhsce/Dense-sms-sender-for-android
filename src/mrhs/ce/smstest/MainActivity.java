@@ -30,6 +30,10 @@ public class MainActivity extends Activity {
     TextView phoneCountLabel;
     TextView messageCountLabel;
     
+    //tmp
+    
+    Button pickContactButton;
+    
     DatabaseHandler db;
     SdCardHandler sdHandler;
     
@@ -54,6 +58,20 @@ public class MainActivity extends Activity {
         sdHandler.execute();									// In this part all the files in the directory 
         log("Sdcard has been checked for adding new contacts");	//are checked and inserted into the database        
         settingUpTheSpinner();
+        
+        pickContactButton=(Button)findViewById(R.id.buttonAddUsingContacts);
+        pickContactButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+//				Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, Phone.CONTENT_URI);
+//			    startActivityForResult(contactPickerIntent, 1001);
+				
+				Intent intent=new Intent(MainActivity.this,ContactPickerMulti.class);
+				startActivityForResult(intent, 0);
+			}
+		});
         
         messageText.addTextChangedListener(new TextWatcher() {
 			
@@ -89,6 +107,15 @@ public class MainActivity extends Activity {
 			}
 		});
     } 
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	// TODO Auto-generated method stub
+    	super.onActivityResult(requestCode, resultCode, data);
+    	if(resultCode==Activity.RESULT_OK){
+    		dbPumping(data.getExtras().getString("groupName"),data.getStringArrayListExtra("names"), data.getStringArrayListExtra("phones"));
+    	}    	
+    }
     
 	private void sendSMS(){   		
         String text=messageText.getText().toString();
@@ -151,6 +178,15 @@ public class MainActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+    
+    public void dbPumping(String groupName,ArrayList<String> namesList,ArrayList<String> phonesList){
+    	if(namesList.size()==phonesList.size()){
+    		for (int i=0;i<namesList.size();i++){
+    			db.insert(groupName, phonesList.get(i), namesList.get(i)); // here should be revised
+    		}
+    	}
+    	 settingUpTheSpinner();
     }
     
     @Override
