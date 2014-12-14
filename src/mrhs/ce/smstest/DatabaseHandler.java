@@ -100,9 +100,7 @@ public class DatabaseHandler {
 				new String[]{"groupName"}, null, null, null, null, "groupName desc", null);
 		if(cursor.moveToFirst()){			
 			do{
-				log("BEFORE");
 				list.add(cursor.getString(0));
-				log("After");
 			}while(cursor.moveToNext());
 		}
 			

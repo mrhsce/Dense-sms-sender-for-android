@@ -13,7 +13,6 @@ import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.Contacts;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -26,6 +25,7 @@ import android.widget.Toast;
 public class ContactPickerMulti extends Activity {
 
 	Button cancelButton;
+	
 	Button doneButton;
 	ListView listView;
 	TextView textView;
@@ -166,6 +166,18 @@ public class ContactPickerMulti extends Activity {
 		for(boolean i: checkedList)
 			if(i)
 				counter++;
+		if(counter==0){
+			cancelButton.setVisibility(View.GONE);
+			doneButton.setVisibility(View.GONE);
+			groupName.setVisibility(View.GONE);
+			textView.setVisibility(View.GONE);
+		}
+		else{
+			cancelButton.setVisibility(View.VISIBLE);
+			doneButton.setVisibility(View.VISIBLE);
+			groupName.setVisibility(View.VISIBLE);
+			textView.setVisibility(View.VISIBLE);
+		}
 		return counter;
 	}
 

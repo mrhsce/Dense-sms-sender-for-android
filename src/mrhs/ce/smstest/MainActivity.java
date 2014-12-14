@@ -33,6 +33,7 @@ public class MainActivity extends Activity {
     //tmp
     
     Button pickContactButton;
+    Button manualGroupMakier;
     
     DatabaseHandler db;
     SdCardHandler sdHandler;
@@ -70,6 +71,20 @@ public class MainActivity extends Activity {
 				
 				Intent intent=new Intent(MainActivity.this,ContactPickerMulti.class);
 				startActivityForResult(intent, 0);
+			}
+		});
+        
+        manualGroupMakier=(Button)findViewById(R.id.buttonAddManually);
+        manualGroupMakier.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+//				Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, Phone.CONTENT_URI);
+//			    startActivityForResult(contactPickerIntent, 1001);
+				
+				Intent intent=new Intent(MainActivity.this,ManualGroupMaker.class);
+				startActivityForResult(intent, 1);
 			}
 		});
         
@@ -112,9 +127,20 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	// TODO Auto-generated method stub
     	super.onActivityResult(requestCode, resultCode, data);
-    	if(resultCode==Activity.RESULT_OK){
-    		dbPumping(data.getExtras().getString("groupName"),data.getStringArrayListExtra("names"), data.getStringArrayListExtra("phones"));
-    	}    	
+    	switch(requestCode){
+    	case(0):{    		
+	    	if(resultCode==Activity.RESULT_OK){
+	    		dbPumping(data.getExtras().getString("groupName"),data.getStringArrayListExtra("names"), data.getStringArrayListExtra("phones"));
+	    	}
+	    	break;
+    	}
+    	case(1):{
+    		if(resultCode==Activity.RESULT_OK){    			
+	    		dbPumping(data.getExtras().getString("groupName"),data.getStringArrayListExtra("names"), data.getStringArrayListExtra("phones"));
+	    	}
+	    	break;
+    	}
+    	}	    	    	
     }
     
 	private void sendSMS(){   		

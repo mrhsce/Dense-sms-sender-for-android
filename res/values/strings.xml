@@ -5,5 +5,6 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_on_message_sent">OnMessageSent</string>
+    <string name="title_activity_manual_group_maker">ManualGroupMaker</string>
 
 </resources>
