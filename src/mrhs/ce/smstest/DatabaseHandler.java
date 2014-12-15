@@ -119,6 +119,20 @@ public class DatabaseHandler {
 			
 		return list;
 	}
+	
+	public ArrayList<String> getNameList(String groupName){
+		ArrayList<String> list=new ArrayList<String>();
+		Cursor cursor=db.query(true, TABLE_NAME,
+				new String[]{"phoneNum" ,"name"}, "groupName = '"+
+						groupName+"'", null, null, null, " name desc", null);
+		if(cursor.moveToFirst()){			
+			do{
+				list.add(cursor.getString(1));
+			}while(cursor.moveToNext());
+		}
+			
+		return list;
+	}
 
 	private static class DbHelper extends SQLiteOpenHelper{
 					

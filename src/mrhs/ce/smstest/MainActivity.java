@@ -22,7 +22,8 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
     
-	
+	final int EDIT=1;
+	final int MAKE=0;
    
     Button send ;
     EditText messageText;
@@ -34,6 +35,7 @@ public class MainActivity extends Activity {
     
     Button pickContactButton;
     Button manualGroupMakier;
+    Button editButton;
     
     DatabaseHandler db;
     SdCardHandler sdHandler;
@@ -48,6 +50,7 @@ public class MainActivity extends Activity {
         
         setContentView(R.layout.activity_main);         
         send=(Button)findViewById(R.id.sendButton);
+        editButton=(Button)findViewById(R.id.buttonEdit);
         phoneCountLabel=(TextView)findViewById(R.id.phoneCountLabel);
         messageCountLabel=(TextView)findViewById(R.id.messageCountLabel);
         messageText=(EditText)findViewById(R.id.messageText);        
@@ -83,7 +86,8 @@ public class MainActivity extends Activity {
 //				Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, Phone.CONTENT_URI);
 //			    startActivityForResult(contactPickerIntent, 1001);
 				
-				Intent intent=new Intent(MainActivity.this,ManualGroupMaker.class);
+				Intent intent=new Intent(MainActivity.this,EditGroupActivity.class);
+				intent.putExtra("mode", MAKE);
 				startActivityForResult(intent, 1);
 			}
 		});
@@ -120,6 +124,20 @@ public class MainActivity extends Activity {
 				log("The message text is : "+messageText.getText().toString());
 				sendSMS();
 			}
+		});    
+        
+        editButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent=new Intent(MainActivity.this,EditGroupActivity.class);
+				intent.putExtra("groupName", selectedGroup);
+				intent.putStringArrayListExtra("names", db.getNameList(selectedGroup));
+				intent.putStringArrayListExtra("phones", db.getPhoneList(selectedGroup));
+				intent.putExtra("mode", EDIT);
+				startActivityForResult(intent, 1);
+			}
 		});
     } 
     
@@ -135,9 +153,14 @@ public class MainActivity extends Activity {
 	    	break;
     	}
     	case(1):{
-    		if(resultCode==Activity.RESULT_OK){    			
-	    		dbPumping(data.getExtras().getString("groupName"),data.getStringArrayListExtra("names"), data.getStringArrayListExtra("phones"));
-	    	}
+    		if(resultCode==Activity.RESULT_OK){ 
+    			if(data.getIntExtra("mode", 0)==EDIT)
+    				db.delete(data.getExtras().getString("exgroupName"));  
+    			if(!data.getExtras().getString("groupName").equals(""))
+    				dbPumping(data.getExtras().getString("groupName"),data.getStringArrayListExtra("names"), data.getStringArrayListExtra("phones"));
+    			else
+    				settingUpTheSpinner();
+    		}
 	    	break;
     	}
     	}	    	    	
@@ -164,10 +187,15 @@ public class MainActivity extends Activity {
         adaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         phoneNumsArraySpinner.setAdapter(adaptor);
         phoneNumsArraySpinner.setOnItemSelectedListener(new spinnerListener());
-        if(db.isFilled())
+        if(db.isFilled()){
         	setPhoneCount(0);
-        else
+        	editButton.setEnabled(true);
+        }        	
+        else{
         	phoneCountLabel.setText("0\nشماره");
+        	editButton.setEnabled(false);
+        }
+        
     }
        
     

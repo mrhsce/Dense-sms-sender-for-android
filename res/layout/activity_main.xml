@@ -14,6 +14,16 @@
        android:layout_height="wrap_content"
        android:layout_alignParentTop="true"
        android:orientation="horizontal">
+       
+    <Button
+        android:id="@+id/buttonEdit"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+		android:layout_weight="1"
+		android:textSize="10dp"
+		android:enabled="true"
+        android:text="ویرایش" />   
    
 	<Spinner
         android:id="@+id/phoneNumSpinner"
@@ -29,7 +39,7 @@
 	    android:gravity="center"
 	    android:text="300\nشماره"
 	    android:textAppearance="?android:attr/textAppearanceSmall"
-	    android:textSize="15sp"
+	    android:textSize="12sp"
 	    android:layout_weight="1" />
     	
     </LinearLayout>
@@ -75,5 +85,6 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:text="اضافه کردن دستی" />
+    
 
 </RelativeLayout>

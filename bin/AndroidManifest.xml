@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="mrhs.ce.smstest"
-    android:installLocation="auto"
+    android:installLocation="preferExternal"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -17,7 +17,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@android:style/Theme.NoTitleBar" >
         <activity
             android:name="mrhs.ce.smstest.MainActivity"
             android:label="@string/app_name"
@@ -40,9 +40,14 @@
         </activity>
         <activity
             android:name="mrhs.ce.smstest.ManualGroupMaker"
-            android:label="@string/title_activity_manual_group_maker" >
+            android:label="@string/title_activity_manual_group_maker" 
+            android:windowSoftInputMode="stateVisible|adjustPan">
         </activity>
-        
+        <activity
+            android:name="mrhs.ce.smstest.EditGroupActivity"
+            android:label="@string/title_activity_edit_group"
+            android:windowSoftInputMode="stateVisible|adjustPan" >
+        </activity>
     </application>
 
 </manifest>

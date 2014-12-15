@@ -11,16 +11,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class ManualArrayAdaptor extends ArrayAdapter<String> {
 	
-	ManualGroupMaker context;
+	EditGroupActivity context;
+	final int EDIT=1;
+	final int MAKE=0;
+	int mode;
 	
-	public ManualArrayAdaptor(ManualGroupMaker context, ArrayList<String> nameList) {
-		super(context, R.layout.manual_layout, nameList);
+	public ManualArrayAdaptor(EditGroupActivity context, ArrayList<String> nameList,int mode) {
+		super(context, R.layout.edit_group_item, nameList);
 		// TODO Auto-generated constructor stub
 		this.context=context;
+		this.mode=mode;
 	}
 	
 	@Override
@@ -29,18 +34,32 @@ public class ManualArrayAdaptor extends ArrayAdapter<String> {
 		if(convertView==null){
 			LayoutInflater inflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = inflater.inflate(R.layout.manual_layout, parent, false);
-		}
-		
-		EditText nameEdit=(EditText) convertView.findViewById(R.id.editPersonName1);
-		EditText phoneEdit=(EditText)convertView.findViewById(R.id.editPhone);
+			convertView = inflater.inflate(R.layout.edit_group_item, parent, false);
+		}		
+		EditText nameEdit=(EditText) convertView.findViewById(R.id.editTextName);
+		EditText phoneEdit=(EditText)convertView.findViewById(R.id.editTextPhone);
+		ImageButton deleteButton=(ImageButton)convertView.findViewById(R.id.deleteButton);
+		if(mode==MAKE)
+			deleteButton.setVisibility(View.GONE);
 		TextView numberLabel=(TextView)convertView.findViewById(R.id.numberLabel);
-		
 		
 		nameEdit.setText(context.nameList.get(context.nameList.size()-1-position));
 		phoneEdit.setText(context.phoneList.get(context.phoneList.size()-1-position));
 		numberLabel.setText(Integer.toString(context.phoneList.size()-position));
 		log("All views are found");
+		
+		deleteButton.requestFocus();
+		deleteButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				context.nameList.remove(context.nameList.size()-1-position);
+				context.phoneList.remove(context.phoneList.size()-1-position);
+				context.chkDeleteAll();
+				context.setAdaptor(mode);
+			}
+		});
 		
 		nameEdit.addTextChangedListener(new TextWatcher() {
 			
@@ -48,6 +67,7 @@ public class ManualArrayAdaptor extends ArrayAdapter<String> {
 			public void afterTextChanged(Editable arg0) {
 				// TODO Auto-generated method stub
 				context.nameList.set(context.nameList.size()-1-position, arg0.toString());
+				context.chkDeleteAll();
 				log("name edit text has been changed");
 			}
 
@@ -71,6 +91,7 @@ public class ManualArrayAdaptor extends ArrayAdapter<String> {
 			public void afterTextChanged(Editable arg0) {
 				// TODO Auto-generated method stub
 				context.phoneList.set(context.phoneList.size()-1-position, arg0.toString());
+				context.chkDeleteAll();
 				log("phone edit text has been changed");
 			}
 
@@ -88,6 +109,8 @@ public class ManualArrayAdaptor extends ArrayAdapter<String> {
 				
 			}
 		});
+		
+		
 		log("All values are set");	
 		
 		return convertView;

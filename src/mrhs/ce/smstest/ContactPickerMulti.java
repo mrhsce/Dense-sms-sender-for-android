@@ -34,17 +34,26 @@ public class ContactPickerMulti extends Activity {
 	ArrayList<String> nameList;
 	public ArrayList<Boolean> checkedList;
 	
+	final int EDIT=1;
+	final int MAKE=0;
+	int mode;	
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.contacts_multi);
+		
+		mode=getIntent().getIntExtra("mode", 0);
+		log("mode is "+Integer.toString(mode));
+		
 		cancelButton = (Button) findViewById(R.id.cancelButton);
 		doneButton = (Button) findViewById(R.id.doneButton);
 		listView = (ListView) findViewById(R.id.list);
 		textView = (TextView) findViewById(R.id.selectedTextview);
 		groupName=(EditText)findViewById(R.id.editTextGroupName);
-
+		
 		phoneList = new ArrayList<String>();
 		nameList = new ArrayList<String>();
 		checkedList = new ArrayList<Boolean>();
@@ -76,7 +85,7 @@ public class ContactPickerMulti extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				if(getSelected()>0)
-					if(!groupName.getText().toString().equals("")){
+					if(!groupName.getText().toString().equals("") || mode==EDIT){
 						Intent output = new Intent();
 						output.putStringArrayListExtra("names", getNamesList());
 						output.putStringArrayListExtra("phones", getPhonesList());
@@ -90,6 +99,7 @@ public class ContactPickerMulti extends Activity {
 					Toast.makeText(ContactPickerMulti.this, "لطفا حداقل یک شماره را انتخاب کنید", Toast.LENGTH_SHORT).show();
 			}
 		});
+		
 
 	}
 	
@@ -172,10 +182,11 @@ public class ContactPickerMulti extends Activity {
 			groupName.setVisibility(View.GONE);
 			textView.setVisibility(View.GONE);
 		}
-		else{
+		else{			
 			cancelButton.setVisibility(View.VISIBLE);
 			doneButton.setVisibility(View.VISIBLE);
-			groupName.setVisibility(View.VISIBLE);
+			if(mode!=EDIT)			
+				groupName.setVisibility(View.VISIBLE);
 			textView.setVisibility(View.VISIBLE);
 		}
 		return counter;
