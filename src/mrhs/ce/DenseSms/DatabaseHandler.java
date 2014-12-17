@@ -1,4 +1,4 @@
-package mrhs.ce.DenseSmS;
+package mrhs.ce.DenseSms;
 import java.util.ArrayList;
 
 import android.content.ContentValues;
@@ -12,7 +12,7 @@ import android.util.Log;
 
 public class DatabaseHandler {
 	
-	private static  int DATABASE_VERSION=3;
+	private static  int DATABASE_VERSION=4;
 	private static final String DATABASE_NAME = "contactsManager";
 	private static final String TABLE_NAME = "contactGroups";
 	
@@ -145,7 +145,7 @@ public class DatabaseHandler {
 		public void onCreate(SQLiteDatabase db) {
 			// TODO Auto-generated method stub
 			String CREATE_DATABASE="CREATE TABLE "+TABLE_NAME+ 
-					" ( groupName text,phoneNum char(11), name text, primary key(groupName,phoneNum))";
+					" ( groupName text,phoneNum varchar(13), name text, primary key(groupName,phoneNum))";
 			db.execSQL(CREATE_DATABASE);
 			log("Databse schematic has been craeted");
 		}

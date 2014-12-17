@@ -1,8 +1,8 @@
-package mrhs.ce.DenseSmS;
+package mrhs.ce.DenseSms;
 
 import java.util.ArrayList;
 
-import mrhs.ce.smstest.R;
+import mrhs.ce.DenseSms.R;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -176,7 +176,7 @@ public class GroupEditorActivity extends Activity {
 				phoneList.remove(phoneList.size()-1);
 			}
 		}
-		else{
+		else if(freq>0){
 			for(int i=0;i<freq;i++){
 				nameList.add("");
 				phoneList.add("");
@@ -201,7 +201,7 @@ public class GroupEditorActivity extends Activity {
 				nameList.add(names.get(i));
 				phoneList.add(phones.get(i));
 			}
-		}
+		}		
 		setAdaptor(mode);
 		chkDeleteAll();
 		return phoneList.size();
@@ -217,6 +217,7 @@ public class GroupEditorActivity extends Activity {
 				else
 					tmpName.add(nameList.get(i));
 				tmpphone.add(phoneList.get(i));
+				//log("Item "+tmpphone.get(i));
 			}
 		}
 		if(tmpName.size()>0){			
@@ -229,6 +230,8 @@ public class GroupEditorActivity extends Activity {
 				log("Group name is "+group);
 				Intent intent=new Intent();
 				intent.putStringArrayListExtra("names", tmpName);
+				log("Nameslist size is : "+Integer.toString(tmpName.size()));
+				log("Phonelist size is : "+Integer.toString(tmpphone.size()));
 				intent.putStringArrayListExtra("phones", tmpphone);
 				intent.putExtra("groupName", group);
 				intent.putExtra("exgroupName", initialGroupName);

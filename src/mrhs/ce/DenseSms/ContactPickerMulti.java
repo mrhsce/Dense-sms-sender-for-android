@@ -1,8 +1,8 @@
-package mrhs.ce.DenseSmS;
+package mrhs.ce.DenseSms;
 
 import java.util.ArrayList;
 
-import mrhs.ce.smstest.R;
+import mrhs.ce.DenseSms.R;
 
 import android.app.Activity;
 import android.content.Intent;

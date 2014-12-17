@@ -1,4 +1,4 @@
-package mrhs.ce.DenseSmS;
+package mrhs.ce.DenseSms;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -84,7 +84,7 @@ public class SdCardHandler {
     			String line;
     			int counter=0;
     			while ((line=br.readLine())!= null){
-    				if(line.split("[ \t]+")[0].matches("0([0-9]){10}")){
+    				if(line.split("[ \t]+")[0].matches("(\\+98|0)[0-9]{10}")){
     					phoneList.get(i).add(new ArrayList<String>());
     					phoneList.get(i).get(counter).add(line.split("[ \t]+")[0]);
     					if(line.split("[ \t]+").length>1)

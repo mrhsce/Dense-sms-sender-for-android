@@ -1,8 +1,8 @@
-package mrhs.ce.DenseSmS;
+package mrhs.ce.DenseSms;
 
 import java.util.ArrayList;
 
-import mrhs.ce.smstest.R;
+import mrhs.ce.DenseSms.R;
 
 import android.content.Context;
 import android.text.Editable;
@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -33,24 +32,33 @@ public class GroupEditorArrayAdaptor extends ArrayAdapter<String> {
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		
+		Boolean cond=true;
 		if(convertView==null){
 			LayoutInflater inflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.edit_group_item, parent, false);
+			cond=false;
 		}		
-		EditText nameEdit=(EditText) convertView.findViewById(R.id.editTextName);
-		EditText phoneEdit=(EditText)convertView.findViewById(R.id.editTextPhone);
+		MyEditText nameEdit=(MyEditText) convertView.findViewById(R.id.editTextName);
+		MyEditText phoneEdit=(MyEditText)convertView.findViewById(R.id.editTextPhone);
 		ImageButton deleteButton=(ImageButton)convertView.findViewById(R.id.deleteButton);
+		if(cond){
+			log("before");
+			nameEdit.removeTextWatcher();
+			phoneEdit.removeTextWatcher();
+			log("after");
+		}
+		
 		if(mode==MAKE)
 			deleteButton.setVisibility(View.GONE);
 		TextView numberLabel=(TextView)convertView.findViewById(R.id.numberLabel);
 		
 		nameEdit.setText(context.nameList.get(context.nameList.size()-1-position));
 		phoneEdit.setText(context.phoneList.get(context.phoneList.size()-1-position));
-		numberLabel.setText(Integer.toString(context.phoneList.size()-position));
+		numberLabel.setText(Integer.toString(context.phoneList.size()-position));		
 		log("All views are found");
 		
-		deleteButton.requestFocus();
+		
 		deleteButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -113,7 +121,8 @@ public class GroupEditorArrayAdaptor extends ArrayAdapter<String> {
 		});
 		
 		
-		log("All values are set");	
+		log("All values are set");
+		numberLabel.requestFocus();
 		
 		return convertView;
 	}

@@ -16,16 +16,13 @@
         android:layout_weight="0.5"
         android:text="1"
         android:textAppearance="?android:attr/textAppearanceSmall" />
-    <EditText
+    <mrhs.ce.DenseSms.MyEditText
         android:id="@+id/editTextName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"
         android:ems="10"
-        android:inputType="text" >
-
-        <requestFocus />
-    </EditText>
+        android:inputType="text" />
 
     <ImageButton
         android:id="@+id/deleteButton"
@@ -36,7 +33,7 @@
         android:scaleType="fitXY"
         android:src="@drawable/delete" />
 
-    <EditText
+     <mrhs.ce.DenseSms.MyEditText 
         android:id="@+id/editTextPhone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
