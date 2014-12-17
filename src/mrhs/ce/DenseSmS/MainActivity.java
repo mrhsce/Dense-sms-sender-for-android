@@ -1,7 +1,9 @@
-package mrhs.ce.smstest;
+package mrhs.ce.DenseSmS;
 
 
 import java.util.ArrayList;
+
+import mrhs.ce.smstest.R;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -86,7 +88,7 @@ public class MainActivity extends Activity {
 //				Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, Phone.CONTENT_URI);
 //			    startActivityForResult(contactPickerIntent, 1001);
 				
-				Intent intent=new Intent(MainActivity.this,EditGroupActivity.class);
+				Intent intent=new Intent(MainActivity.this,GroupEditorActivity.class);
 				intent.putExtra("mode", MAKE);
 				startActivityForResult(intent, 1);
 			}
@@ -98,7 +100,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void afterTextChanged(Editable arg0) {
 				// TODO Auto-generated method stub
-				setMessageCount(arg0.toString());
+				setMessageCount();
 			}
 
 			@Override
@@ -131,7 +133,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				Intent intent=new Intent(MainActivity.this,EditGroupActivity.class);
+				Intent intent=new Intent(MainActivity.this,GroupEditorActivity.class);
 				intent.putExtra("groupName", selectedGroup);
 				intent.putStringArrayListExtra("names", db.getNameList(selectedGroup));
 				intent.putStringArrayListExtra("phones", db.getPhoneList(selectedGroup));
@@ -170,10 +172,13 @@ public class MainActivity extends Activity {
         String text=messageText.getText().toString();
         ArrayList<String> addrList=db.getPhoneList(selectedGroup);
         if(!text.equals("") && addrList.size()>0){
-	    	Intent intent=new Intent(MainActivity.this,OnMessageSent.class);
+	    	Intent intent=new Intent(MainActivity.this,PostMessageActivity.class);
 	    	Bundle b=new Bundle();
 	    	b.putString("message text", text);
-	    	b.putStringArrayList("phone numbers", addrList);
+	    	b.putInt("messageCount", setMessageCount());
+	    	b.putInt("phoneCount", setPhoneCount());
+	    	b.putStringArrayList("phones", addrList);
+	    	b.putStringArrayList("names", db.getNameList(selectedGroup));
 	    	intent.putExtras(b);
 	    	startActivity(intent);
         }
@@ -188,7 +193,7 @@ public class MainActivity extends Activity {
         phoneNumsArraySpinner.setAdapter(adaptor);
         phoneNumsArraySpinner.setOnItemSelectedListener(new spinnerListener());
         if(db.isFilled()){
-        	setPhoneCount(0);
+        	setPhoneCount();
         	editButton.setEnabled(true);
         }        	
         else{
@@ -206,7 +211,7 @@ public class MainActivity extends Activity {
 				long id) {
 			// TODO Auto-generated method stub
 			log("Item "+Integer.toString(pos)+" is selected");
-			setPhoneCount(pos);
+			setPhoneCount();
 		}
 
 		@Override
@@ -216,16 +221,20 @@ public class MainActivity extends Activity {
 		}
     	
     }
-    public void setPhoneCount(int pos){
+    public Integer setPhoneCount(){
+    	int pos=phoneNumsArraySpinner.getSelectedItemPosition();
     	selectedGroup = phoneNumsArraySpinner.getItemAtPosition(pos).toString();
     	int count= db.getPhoneList(selectedGroup).size();
     	phoneCountLabel.setText(Integer.toString(count)+"\nشماره");
     	log(Integer.toString(count)+" is the number of the phone numbers");
+    	return count;
     }
     
-    public void setMessageCount(String editableText){
+    public Integer setMessageCount(){
+    	String editableText=messageText.getText().toString();
      	int num=SmsManager.getDefault().divideMessage(editableText).size();
      	messageCountLabel.setText(Integer.toString(num)+"\nپیام");
+     	return num;
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

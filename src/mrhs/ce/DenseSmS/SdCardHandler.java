@@ -1,4 +1,4 @@
-package mrhs.ce.smstest;
+package mrhs.ce.DenseSmS;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -41,6 +41,13 @@ public class SdCardHandler {
 	
 	private void DbPumping(ArrayList<String> textFileNames,ArrayList<ArrayList<ArrayList<String>>> textFileContents){
 		for(int i=0;i<textFileNames.size();i++){
+//			if(db.groupExists(textFileNames.get(i))){			
+//				int index=1;
+//				while(db.groupExists(textFileNames.get(i)+" "+Integer.toString(index))){
+//					index++;
+//				}
+//				textFileNames.set(i, textFileNames.get(i)+" "+Integer.toString(index));
+//			}
 			for(int j=0;j<textFileContents.get(i).size();j++){
 				if(textFileContents.get(i).get(j).get(1).equals(""))
 					db.insert(textFileNames.get(i), textFileContents.get(i).get(j).get(0), null);

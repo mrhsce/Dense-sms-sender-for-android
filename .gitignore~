@@ -26,4 +26,4 @@ proguard/
 *.log
 
 # Gedit backup files
-*.md~
+~*.md

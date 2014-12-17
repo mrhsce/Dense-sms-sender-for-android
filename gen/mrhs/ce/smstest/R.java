@@ -28,41 +28,46 @@ public final class R {
         public static final int ic_launcher=0x7f020004;
     }
     public static final class id {
-        public static final int action_settings=0x7f080022;
+        public static final int MessageReportListView=0x7f080013;
+        public static final int NameLabel1=0x7f080024;
+        public static final int action_settings=0x7f080027;
         public static final int buttonAddManually=0x7f08000f;
         public static final int buttonAddUsingContacts=0x7f08000e;
         public static final int buttonEdit=0x7f080008;
-        public static final int cancelButton=0x7f080017;
-        public static final int chkBox=0x7f080014;
-        public static final int deleteButton=0x7f08001e;
+        public static final int cancelButton=0x7f080018;
+        public static final int chkBox=0x7f080015;
+        public static final int deleteButton=0x7f08001f;
         public static final int deliveredCountLabel=0x7f080012;
-        public static final int doneButton=0x7f080018;
+        public static final int deliveredLabel1=0x7f080026;
+        public static final int doneButton=0x7f080019;
         public static final int editAddButton=0x7f080000;
         public static final int editAddContactButton=0x7f080005;
         public static final int editDeleteButton=0x7f080002;
         public static final int editDoneButton=0x7f080006;
         public static final int editGroupName=0x7f080001;
         public static final int editListView=0x7f080003;
-        public static final int editPersonName1=0x7f080020;
-        public static final int editPhone=0x7f080021;
+        public static final int editPersonName1=0x7f080021;
+        public static final int editPhone=0x7f080022;
         public static final int editResetButton=0x7f080004;
-        public static final int editTextGroupName=0x7f080019;
-        public static final int editTextName=0x7f08001d;
-        public static final int editTextPhone=0x7f08001f;
-        public static final int linLayout=0x7f080016;
+        public static final int editTextGroupName=0x7f08001a;
+        public static final int editTextName=0x7f08001e;
+        public static final int editTextPhone=0x7f080020;
+        public static final int linLayout=0x7f080017;
         public static final int linlayout1=0x7f080007;
-        public static final int list=0x7f08001b;
+        public static final int list=0x7f08001c;
         public static final int messageCountLabel=0x7f08000d;
         public static final int messageText=0x7f08000b;
         public static final int messageTextView=0x7f080010;
-        public static final int nameTxtView=0x7f080013;
-        public static final int numberLabel=0x7f08001c;
+        public static final int nameTxtView=0x7f080014;
+        public static final int numberLabel=0x7f08001d;
+        public static final int numberLabel1=0x7f080023;
         public static final int phoneCountLabel=0x7f08000a;
         public static final int phoneNumSpinner=0x7f080009;
-        public static final int phoneTxtView=0x7f080015;
-        public static final int selectedTextview=0x7f08001a;
+        public static final int phoneTxtView=0x7f080016;
+        public static final int selectedTextview=0x7f08001b;
         public static final int sendButton=0x7f08000c;
         public static final int sentCountLabel=0x7f080011;
+        public static final int sentLabel1=0x7f080025;
     }
     public static final class layout {
         public static final int activity_edit_group=0x7f030000;
@@ -72,6 +77,7 @@ public final class R {
         public static final int contacts_multi=0x7f030004;
         public static final int edit_group_item=0x7f030005;
         public static final int manual_layout=0x7f030006;
+        public static final int message_report_item=0x7f030007;
     }
     public static final class menu {
         public static final int edit_group=0x7f070000;

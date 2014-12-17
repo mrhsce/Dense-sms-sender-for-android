@@ -1,6 +1,8 @@
-package mrhs.ce.smstest;
+package mrhs.ce.DenseSmS;
 
 import java.util.ArrayList;
+
+import mrhs.ce.smstest.R;
 
 import android.content.Context;
 import android.text.Editable;
@@ -14,14 +16,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-public class ManualArrayAdaptor extends ArrayAdapter<String> {
+public class GroupEditorArrayAdaptor extends ArrayAdapter<String> {
 	
-	EditGroupActivity context;
+	GroupEditorActivity context;
 	final int EDIT=1;
 	final int MAKE=0;
 	int mode;
 	
-	public ManualArrayAdaptor(EditGroupActivity context, ArrayList<String> nameList,int mode) {
+	public GroupEditorArrayAdaptor(GroupEditorActivity context, ArrayList<String> nameList,int mode) {
 		super(context, R.layout.edit_group_item, nameList);
 		// TODO Auto-generated constructor stub
 		this.context=context;

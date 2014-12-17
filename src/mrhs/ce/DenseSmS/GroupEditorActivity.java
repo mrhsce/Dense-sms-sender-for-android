@@ -1,6 +1,8 @@
-package mrhs.ce.smstest;
+package mrhs.ce.DenseSmS;
 
 import java.util.ArrayList;
+
+import mrhs.ce.smstest.R;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -13,7 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class EditGroupActivity extends Activity {
+public class GroupEditorActivity extends Activity {
 
 	final int EDIT=1;
 	final int MAKE=0;
@@ -72,7 +74,7 @@ public class EditGroupActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				Intent intent=new Intent(EditGroupActivity.this,ContactPickerMulti.class);
+				Intent intent=new Intent(GroupEditorActivity.this,ContactPickerMulti.class);
 				intent.putExtra("mode", EDIT);
 				startActivityForResult(intent, 0);
 			}
@@ -83,7 +85,7 @@ public class EditGroupActivity extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				if(groupNameEditText.getText().toString().equals(""))
-					Toast.makeText(EditGroupActivity.this, "لطفا گروه را نامگذاری کنید", Toast.LENGTH_SHORT).show();
+					Toast.makeText(GroupEditorActivity.this, "لطفا گروه را نامگذاری کنید", Toast.LENGTH_SHORT).show();
 				else
 					chkList(groupNameEditText.getText().toString());
 			}
@@ -164,7 +166,7 @@ public class EditGroupActivity extends Activity {
 	}
 	
 	public void setAdaptor(int mode){
-		listView.setAdapter(new ManualArrayAdaptor(this, nameList,mode));
+		listView.setAdapter(new GroupEditorArrayAdaptor(this, nameList,mode));
 	}
 	
 	private int addField(int freq){
@@ -219,7 +221,7 @@ public class EditGroupActivity extends Activity {
 		}
 		if(tmpName.size()>0){			
 			if(!group.equals(initialGroupName) && db.groupExists(group)){
-				Toast.makeText(EditGroupActivity.this, "گروه مورد نظر وجود دارد لطفا نام دیگری را وارد کنید",
+				Toast.makeText(GroupEditorActivity.this, "گروه مورد نظر وجود دارد لطفا نام دیگری را وارد کنید",
 						Toast.LENGTH_SHORT).show();
 			}
 			else{
@@ -236,7 +238,7 @@ public class EditGroupActivity extends Activity {
 			}
 		}
 		else
-			Toast.makeText(EditGroupActivity.this, "لطفا مشخصات را به خوبی وارد کنید", Toast.LENGTH_SHORT).show();
+			Toast.makeText(GroupEditorActivity.this, "لطفا مشخصات را به خوبی وارد کنید", Toast.LENGTH_SHORT).show();
 	}	
 	
 	public boolean chkDeleteAll(){

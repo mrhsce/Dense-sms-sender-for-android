@@ -1,4 +1,4 @@
-package mrhs.ce.smstest;
+package mrhs.ce.DenseSmS;
 import java.util.ArrayList;
 
 import android.content.ContentValues;
