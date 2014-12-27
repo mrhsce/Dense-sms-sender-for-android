@@ -60,6 +60,8 @@ public class GroupEditorActivity extends Activity {
 						phoneList.add(initialPhoneList.get(i));
 					}
 					groupNameEditText.setText(initialGroupName);
+					deleteAll=false;
+					chkDeleteAll();
 					setAdaptor(mode);
 				}
 				if(mode==MAKE){
@@ -212,10 +214,12 @@ public class GroupEditorActivity extends Activity {
 		ArrayList<String> tmpphone=new ArrayList<String>();
 		for(int i=0;i<nameList.size();i++){
 			if(/*!nameList.get(i).equals("") && */phoneList.get(i).matches("(\\+98|0)[0-9]{10}")){
-				if(nameList.get(i).equals(""))
-					tmpName.add(null);
-				else
+				if(nameList.get(i).equals("")){
+					tmpName.add("");
+				}
+				else{
 					tmpName.add(nameList.get(i));
+				}
 				tmpphone.add(phoneList.get(i));
 				//log("Item "+tmpphone.get(i));
 			}

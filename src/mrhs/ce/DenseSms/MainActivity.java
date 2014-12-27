@@ -137,6 +137,7 @@ public class MainActivity extends Activity {
 				intent.putExtra("groupName", selectedGroup);
 				intent.putStringArrayListExtra("names", db.getNameList(selectedGroup));
 				intent.putStringArrayListExtra("phones", db.getPhoneList(selectedGroup));
+				//log("Name list size is : "+Integer.toString(db.getNameList(selectedGroup).size()));
 				intent.putExtra("mode", EDIT);
 				startActivityForResult(intent, 1);
 			}

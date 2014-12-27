@@ -28,7 +28,7 @@ Things to do ->
 	- ✔ Show exactly for which phone numbers message has been send and also for which has been delivered
 	
 	Third phase:		
-	- In the manual maker take care of the focus(returning to its place) and also not to focus edit text
+	- ✔ In the manual maker take care of the focus(returning to its place) and also not to focus edit text
 	- when editing a group and returning the edited group should be selected 	
 	- A mechanism for sending message to failed contacts
 	- Design message sent history and ability to select and edit and send old messages
@@ -37,6 +37,6 @@ Things to do ->
 	- as long as the number of the sent and delivered messages hasn't reached the maximum there should be a small animation
 	running for each
 	- work on the graphic and use branched weighting and scroll bars for the views
-	- add attribute source to the database to diffrentiate groups automatically created and manuals
+	- add attribute source to the database to differentiate groups automatically created and manuals
 	in order to add duplicate sd based groups
-	
+	- add mechanism for exporting the groups

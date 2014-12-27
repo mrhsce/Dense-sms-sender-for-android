@@ -50,7 +50,7 @@ public class SdCardHandler {
 //			}
 			for(int j=0;j<textFileContents.get(i).size();j++){
 				if(textFileContents.get(i).get(j).get(1).equals(""))
-					db.insert(textFileNames.get(i), textFileContents.get(i).get(j).get(0), null);
+					db.insert(textFileNames.get(i), textFileContents.get(i).get(j).get(0), "");
 				else
 					db.insert(textFileNames.get(i), textFileContents.get(i).get(j).get(0), textFileContents.get(i).get(j).get(1));
 			}		
