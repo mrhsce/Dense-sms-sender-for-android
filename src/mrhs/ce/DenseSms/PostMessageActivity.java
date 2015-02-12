@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import mrhs.ce.DenseSms.R;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -105,8 +106,24 @@ public class PostMessageActivity extends Activity {
                 registerReceiver(deliveryBroadcastReciever.get(i), new IntentFilter(DELIVERED+Integer.toString(i)+"."+Integer.toString(j)));
 	        	sentPI.get(i).add(PendingIntent.getBroadcast(this, 0, new Intent(SENT+Integer.toString(i)+"."+Integer.toString(j)), 0));
 	        	deliveredPI.get(i).add(PendingIntent.getBroadcast(this, 0, new Intent(DELIVERED+Integer.toString(i)+"."+Integer.toString(j)),0));
-        	}        	
+        	}  
+        	if(i==0)
         	sms.sendMultipartTextMessage(phoneNumbers.get(i), null, mesgParts, sentPI.get(i), deliveredPI.get(i));
+        	else{
+        		final SmsManager INsms=sms;
+        		final ArrayList<String> INphoneNumbers=phoneNumbers;
+        		final int INi=i;
+        		final ArrayList<ArrayList<PendingIntent>> INsentPI=sentPI;
+        		final ArrayList<ArrayList<PendingIntent>> INdeliveredPI=deliveredPI;
+        		final ArrayList<String> INmesgParts=mesgParts;
+        		new Handler().postDelayed(new Runnable() {					
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						INsms.sendMultipartTextMessage(INphoneNumbers.get(INi), null, INmesgParts, INsentPI.get(INi), INdeliveredPI.get(INi));
+					}
+				}, 1000*3*messageCount*INi);
+        	}
         }       
 	}	
 	
@@ -121,7 +138,7 @@ public class PostMessageActivity extends Activity {
 				getRespond(sentMessage, intent.getAction(), true);
 				break;
 			case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-				log("Genegic failure");
+				log("Generic failure");
 				getRespond(sentMessage, intent.getAction(), false);
 				break;
 			case SmsManager.RESULT_ERROR_NO_SERVICE:

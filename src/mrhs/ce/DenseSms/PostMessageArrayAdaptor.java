@@ -36,7 +36,7 @@ public class PostMessageArrayAdaptor extends ArrayAdapter<String> {
 		
 		
 		numberLabel.setText(Integer.toString(position+1));
-		if(context.nameList.get(position)==null)
+		if(context.nameList.get(position).equals(""))
 			nameLabel.setText(context.phoneList.get(position));
 		else
 			nameLabel.setText(context.nameList.get(position));
