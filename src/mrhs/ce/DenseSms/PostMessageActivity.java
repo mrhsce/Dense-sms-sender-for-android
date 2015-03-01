@@ -122,7 +122,7 @@ public class PostMessageActivity extends Activity {
 						// TODO Auto-generated method stub
 						INsms.sendMultipartTextMessage(INphoneNumbers.get(INi), null, INmesgParts, INsentPI.get(INi), INdeliveredPI.get(INi));
 					}
-				}, 1000*3*messageCount*INi);
+				}, Commons.MESSAGE_INTERVAL*messageCount*INi);
         	}
         }       
 	}	

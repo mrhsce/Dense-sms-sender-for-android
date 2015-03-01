@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import mrhs.ce.DenseSms.Database.ContactDatabaseHandler;
+
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
@@ -12,7 +14,7 @@ import android.widget.Toast;
 
 public class SdCardHandler {
 	
-	DatabaseHandler db;
+	ContactDatabaseHandler db;
 	Context ctx;
 	
 // Constants related to the condition of the file and the sdcard
@@ -24,7 +26,7 @@ public class SdCardHandler {
     final Integer no_text_file=4;
     final Integer text_file_exists=5;
 	
-	public SdCardHandler(DatabaseHandler db , Context ctx){
+	public SdCardHandler(ContactDatabaseHandler db , Context ctx){
 		this.db=db;
 		this.ctx=ctx;
 	}

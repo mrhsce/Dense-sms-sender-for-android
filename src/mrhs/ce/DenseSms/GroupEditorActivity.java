@@ -3,6 +3,7 @@ package mrhs.ce.DenseSms;
 import java.util.ArrayList;
 
 import mrhs.ce.DenseSms.R;
+import mrhs.ce.DenseSms.Database.ContactDatabaseHandler;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -30,7 +31,7 @@ public class GroupEditorActivity extends Activity {
 			
 	String initialGroupName;
 	int mode;
-	DatabaseHandler db;
+	ContactDatabaseHandler db;
 	boolean deleteAll;
 	
 	@Override
@@ -38,7 +39,7 @@ public class GroupEditorActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_group);
 
-		db=new DatabaseHandler(this).open();
+		db=new ContactDatabaseHandler(this).open();
 		listView=(ListView)findViewById(R.id.editListView);
 		addButton=(ImageButton)findViewById(R.id.editAddButton);
 		addContactButton=(Button)findViewById(R.id.editAddContactButton);

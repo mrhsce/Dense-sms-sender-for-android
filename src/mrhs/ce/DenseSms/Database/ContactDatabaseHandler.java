@@ -1,4 +1,4 @@
-package mrhs.ce.DenseSms;
+package mrhs.ce.DenseSms.Database;
 import java.util.ArrayList;
 
 import android.content.ContentValues;
@@ -10,21 +10,21 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 
-public class DatabaseHandler {
+public class ContactDatabaseHandler {
 	
 	private static  int DATABASE_VERSION=4;
-	private static final String DATABASE_NAME = "contactsManager";
+	private static final String DATABASE_NAME = "denseSMS";
 	private static final String TABLE_NAME = "contactGroups";
 	
 	private DbHelper dbHelper;
 	private  SQLiteDatabase db;
 	
 	// Necessary functions (DDL)
-	public DatabaseHandler(Context ctx){
+	public ContactDatabaseHandler(Context ctx){
 		dbHelper=new DbHelper(ctx);
 	}
 	
-	public DatabaseHandler open() throws SQLException{
+	public ContactDatabaseHandler open() throws SQLException{
 		db=dbHelper.getWritableDatabase();
 		return this;
 	}
@@ -159,6 +159,6 @@ public class DatabaseHandler {
 		
 	}
 	private static void log(String message){
-		Log.d("DbHelper",message);
+		Log.d("ContactDbHelper",message);
 	}
 }

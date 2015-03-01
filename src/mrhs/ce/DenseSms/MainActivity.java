@@ -4,6 +4,9 @@ package mrhs.ce.DenseSms;
 import java.util.ArrayList;
 
 import mrhs.ce.DenseSms.R;
+import mrhs.ce.DenseSms.Database.ContactDatabaseHandler;
+import mrhs.ce.DenseSms.MessageLog.MessageLogActivity;
+import mrhs.ce.DenseSms.MessageLog.MessageLogMainActivity;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -35,11 +38,9 @@ public class MainActivity extends Activity {
     
     //tmp
     
-    Button pickContactButton;
-    Button manualGroupMakier;
-    Button editButton;
+    Button pickContactButton,manualGroupMakier,editButton,messageLogButton,aboutUsButton;
     
-    DatabaseHandler db;
+    ContactDatabaseHandler db;
     SdCardHandler sdHandler;
     
     String selectedGroup="";
@@ -53,12 +54,14 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);         
         send=(Button)findViewById(R.id.sendButton);
         editButton=(Button)findViewById(R.id.buttonEdit);
+        messageLogButton = (Button)findViewById(R.id.buttonMessageLog);
+        aboutUsButton = (Button)findViewById(R.id.buttonAbout);
         phoneCountLabel=(TextView)findViewById(R.id.phoneCountLabel);
         messageCountLabel=(TextView)findViewById(R.id.messageCountLabel);
         messageText=(EditText)findViewById(R.id.messageText);        
         log("All items are initiated oncreate");
         
-        db=new DatabaseHandler(this);
+        db=new ContactDatabaseHandler(this);
         db.open();
         sdHandler=new SdCardHandler(db, this);  
         sdHandler.execute();									// In this part all the files in the directory 
@@ -142,6 +145,27 @@ public class MainActivity extends Activity {
 				startActivityForResult(intent, 1);
 			}
 		});
+        
+        messageLogButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent=new Intent(MainActivity.this,MessageLogMainActivity.class);
+				startActivity(intent);
+			}
+		});
+        
+        aboutUsButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent=new Intent(MainActivity.this,MessageLogActivity.class);
+				startActivity(intent);
+			}
+		});
+        
     } 
     
     @Override
