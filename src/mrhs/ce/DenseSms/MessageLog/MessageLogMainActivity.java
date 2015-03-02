@@ -23,6 +23,7 @@ public class MessageLogMainActivity extends Activity {
 	public ArrayList<Integer> oprIdList;
 	public ArrayList<String> oprMsgList,oprDateList;
 	SentReciever reciever;
+	MainLogArrayAdaptor listAdaptor;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,14 +42,15 @@ public class MessageLogMainActivity extends Activity {
 		}while(cursor.moveToNext());
 		setContentView(R.layout.activity_message_log_main);
 		mainList = (ListView)findViewById(R.id.listMainLog);
-		
-		mainList.setAdapter(new MainLogArrayAdaptor(this,oprIdList));
+		listAdaptor = new MainLogArrayAdaptor(this,oprIdList);
+		mainList.setAdapter(listAdaptor);
 		mainList.setDividerHeight(10); 
 		mainList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapter, View view,int position, long id){
 				// TODO Auto-generated method stub
-				// here there should be an an intent with the position to the messageLogActivity
+				Intent intent = new Intent(MessageLogMainActivity.this,MessageLogActivity.class);
+				startActivity(intent.putExtra("oprId", oprIdList.get(position)));
 			}
 		});
 		reciever = new SentReciever();
@@ -59,7 +61,8 @@ public class MessageLogMainActivity extends Activity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
-			mainList.setAdapter(new MainLogArrayAdaptor(MessageLogMainActivity.this,oprIdList));
+			//mainList.setAdapter(new MainLogArrayAdaptor(MessageLogMainActivity.this,oprIdList));
+			listAdaptor.notifyDataSetChanged();
 		}
 	}
 	
@@ -71,6 +74,7 @@ public class MessageLogMainActivity extends Activity {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		dbHandler.close();
+		unregisterReceiver(reciever);
 		super.onDestroy();
 	}
 

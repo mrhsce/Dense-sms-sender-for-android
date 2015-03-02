@@ -56,6 +56,7 @@
             android:name="mrhs.ce.DenseSms.AboutActivity"
             android:label="@string/title_activity_about" >
         </activity>
+        <service android:enabled="true" android:name="mrhs.ce.DenseSms.SendingService"/>
     </application>
 
 </manifest>

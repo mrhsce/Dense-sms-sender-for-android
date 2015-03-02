@@ -12,7 +12,7 @@ import android.util.Log;
 
 public class ContactDatabaseHandler {
 	
-	private static  int DATABASE_VERSION=4;
+	private static  int DATABASE_VERSION=2;
 	private static final String DATABASE_NAME = "denseSMS";
 	private static final String TABLE_NAME = "contactGroups";
 	

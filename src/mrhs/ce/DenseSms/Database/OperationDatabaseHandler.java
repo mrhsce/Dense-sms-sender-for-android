@@ -14,7 +14,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class OperationDatabaseHandler {
-	private static  int DATABASE_VERSION=1;
+	private static  int DATABASE_VERSION=2;
 	private static final String DATABASE_NAME = "denseSMS";
 	private static final String OPERATION_TABLE_NAME = "operations";
 	private static final String STATUS_TABLE_NAME = "status";
@@ -36,6 +36,7 @@ public class OperationDatabaseHandler {
 			dbHelper.close();
 	}
 	
+		
 	public Integer insertOperation(String message){ // if successful returns id else returns fail code
 		ContentValues values=new ContentValues();
 		values.put("msgtxt", message);		
@@ -73,10 +74,20 @@ public class OperationDatabaseHandler {
 	}
 	
 	public Cursor getAllOperations(){
-		Cursor cursor=db.query(STATUS_TABLE_NAME, new String[]{"oprId","msgtxt","created_at"}, null, null, null, null, "created_at desc");
+		Cursor cursor=db.query(OPERATION_TABLE_NAME, new String[]{"oprId","msgtxt","created_at"}, null, null, null, null, "created_at desc");
 		if(cursor != null){
 			cursor.moveToFirst();
 			return cursor;
+		}return null;
+	}
+	
+	public String getOperationText(Integer oprId){
+		Cursor cursor=db.query(OPERATION_TABLE_NAME, new String[]{"msgtxt"}, "oprId = "+Integer.toString(oprId), null, null, null, null);
+		if(cursor != null){
+			if(cursor.moveToFirst())
+				return cursor.getString(0);
+			else
+				return null;
 		}return null;
 	}
 	
@@ -97,18 +108,33 @@ public class OperationDatabaseHandler {
 		
 	}
 	
-	public Cursor getAllStatusOfOperation(Integer oprId){
-		Cursor cursor=db.query(STATUS_TABLE_NAME, new String[]{"id","oprId","groupName","phoneNum","name","status","acceptance","stat_at"}, "oprId = "+Integer.toString(oprId), null, null, null, "stat_at desc");
-		if(cursor != null){
+	boolean ascending = true;
+	public Cursor getAllStatusOfOperation(Integer oprId,boolean order){
+		Cursor cursor;
+		if(order == ascending)
+			cursor=db.query(STATUS_TABLE_NAME, new String[]{"id","oprId","groupName","phoneNum","name","status","acceptance","stat_at"}, "oprId = "+Integer.toString(oprId), null, null, null, "id asc");
+		else
+			cursor=db.query(STATUS_TABLE_NAME, new String[]{"id","oprId","groupName","phoneNum","name","status","acceptance","stat_at"}, "oprId = "+Integer.toString(oprId), null, null, null, "stat_at desc");		if(cursor != null){
 			cursor.moveToFirst();
 			return cursor;
-		}return null;
-		
-	}
+		}return null;		
+	}	
+	
+//	public Cursor getAllDetailsOfStatus(Integer id){
+//		Cursor cursor;
+//		if(type == ascending)
+//			cursor=db.query(STATUS_TABLE_NAME, new String[]{"id","oprId","groupName","phoneNum","name","status","acceptance","stat_at"}, "id = "+Integer.toString(id), null, null, null, "id asc");
+//		else
+//			cursor=db.query(STATUS_TABLE_NAME, new String[]{"id","oprId","groupName","phoneNum","name","status","acceptance","stat_at"}, "id = "+Integer.toString(id), null, null, null, "stat_at desc");				
+//		if(cursor != null){
+//			cursor.moveToFirst();
+//			return cursor;
+//		}return null;		
+//	}
 	
 	public boolean deleteOperation(Integer oprId){
 		// Delete the operation as well as all the related status
-		Cursor cursor=getAllStatusOfOperation(oprId);
+		Cursor cursor=getAllStatusOfOperation(oprId,true);
 		do{
 			db.delete(OPERATION_TABLE_NAME, "id = "+Integer.toString(cursor.getInt(0)), null);
 		}while(cursor.moveToNext());
@@ -126,20 +152,18 @@ public class OperationDatabaseHandler {
 		public void onCreate(SQLiteDatabase db) {
 			// TODO Auto-generated method stub
 			String OPERATION_CREATE_DATABASE="CREATE TABLE IF NOT EXISTS "+OPERATION_TABLE_NAME+ 
-					" ( oprId int(10) NOT NULL AUTOINCREMENT," +
+					" ( oprId INTEGER PRIMARY KEY," +
 						"msgtxt  text NOT NULL," +
-							"created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
-								"primary key(id))";
+							"created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)";
 			String STATUS_CREATE_DATABASE="CREATE TABLE IF NOT EXISTS "+STATUS_TABLE_NAME+
-											"(id int(10) NOT NULL AUTOINCREMENT," +
-											"oprId int(10) NOT NULL" +
-											"groupName varchar(40) NOT NULL" +
-											"name varchar(30)" +
-											"phoneNum varchar(13) NOT NULL" +
-											"status int(1) NOT NULL" +
+											"(id INTEGER PRIMARY KEY," +
+											"oprId int(10) NOT NULL," +
+											"groupName varchar(40) NOT NULL," +
+											"name varchar(30)," +
+											"phoneNum varchar(13) NOT NULL," +
+											"status int(1) NOT NULL," +
 											"acceptance int(1),"+
 											"stat_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
-											"primary key(id)," +
 											"foreign key(oprId) REFERENCES " +OPERATION_TABLE_NAME+
 											"(oprId))";
 					
@@ -158,6 +182,7 @@ public class OperationDatabaseHandler {
 		
 	}
 	private static void log(String message){
-		Log.d("MessagingDbHelper",message);
+		if(Commons.SHOW_LOG)
+			Log.d("operationsDbHelper",message);
 	}
 }

@@ -1,14 +1,12 @@
 package mrhs.ce.DenseSms.MessageLog;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import mrhs.ce.DenseSms.Commons;
 
 import mrhs.ce.DenseSms.R;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +18,7 @@ public class MainLogArrayAdaptor extends ArrayAdapter<Integer> {
 	MessageLogMainActivity context;	
 	ArrayList<Integer> oprIdList;
 	public MainLogArrayAdaptor(MessageLogMainActivity context, ArrayList<Integer> oprIdList) {		
-		super(context,R.layout.activity_main_log,oprIdList); 
+		super(context,R.layout.activity_main_log_item,oprIdList); 
 		Log.i("arrayAdaptor","Has started");
 		this.context = context;
 		this.oprIdList=oprIdList;		
@@ -32,11 +30,11 @@ public class MainLogArrayAdaptor extends ArrayAdapter<Integer> {
 		if(convertView==null){
 			LayoutInflater inflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = inflater.inflate(R.layout.activity_main_log, parent, false);
+			convertView = inflater.inflate(R.layout.activity_main_log_item, parent, false);
 		}			
 		
 		Integer sentCount = 0,deliveredCount = 0,failedCount = 0,count = 0;
-		Cursor c = context.dbHandler.getAllStatusOfOperation(oprIdList.get(position));
+		Cursor c = context.dbHandler.getAllStatusOfOperation(oprIdList.get(position),true);
 		do{
 			count++;
 			if(c.getInt(5) == Commons.MESSAGE_SENT){
@@ -47,6 +45,7 @@ public class MainLogArrayAdaptor extends ArrayAdapter<Integer> {
 			}
 			if(c.getInt(5) == Commons.MESSAGE_DELIVERED){
 				deliveredCount++;
+				sentCount++;
 			}
 		}while(c.moveToNext());
 		c.moveToFirst();
@@ -60,11 +59,11 @@ public class MainLogArrayAdaptor extends ArrayAdapter<Integer> {
 		TextView countView   =(TextView) convertView.findViewById(R.id.labelCount);
 		TextView messageView   =(TextView) convertView.findViewById(R.id.labelMessageText);
 		
-		sentView.setText(sentCount);
-		deliveredView.setText(deliveredCount);
-		failedView.setText(failedCount);
+		sentView.setText(Integer.toString(sentCount));
+		deliveredView.setText(Integer.toString(deliveredCount));
+		failedView.setText(Integer.toString(failedCount));
 		groupNameView.setText(groupName);
-		countView.setText(count);
+		countView.setText(Integer.toString(count));
 		dateView.setText(context.oprDateList.get(position));
 		messageView.setText(context.oprMsgList.get(position));
 		

@@ -20,4 +20,7 @@ public interface Commons {
 	// Interval between messages (ms)
 	
 	public final Integer MESSAGE_INTERVAL = 5000;
+	
+	// Use this for deactivate log througout the app
+	public final boolean SHOW_LOG = true;
 }

@@ -5,12 +5,14 @@ import java.util.ArrayList;
 
 import mrhs.ce.DenseSms.R;
 import mrhs.ce.DenseSms.Database.ContactDatabaseHandler;
+import mrhs.ce.DenseSms.Database.OperationDatabaseHandler;
 import mrhs.ce.DenseSms.MessageLog.MessageLogActivity;
 import mrhs.ce.DenseSms.MessageLog.MessageLogMainActivity;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -40,7 +42,8 @@ public class MainActivity extends Activity {
     
     Button pickContactButton,manualGroupMakier,editButton,messageLogButton,aboutUsButton;
     
-    ContactDatabaseHandler db;
+    ContactDatabaseHandler contactDb;
+    OperationDatabaseHandler oprDb;
     SdCardHandler sdHandler;
     
     String selectedGroup="";
@@ -61,9 +64,10 @@ public class MainActivity extends Activity {
         messageText=(EditText)findViewById(R.id.messageText);        
         log("All items are initiated oncreate");
         
-        db=new ContactDatabaseHandler(this);
-        db.open();
-        sdHandler=new SdCardHandler(db, this);  
+        contactDb=new ContactDatabaseHandler(this).open();
+        oprDb = new OperationDatabaseHandler(this).open();
+        
+        sdHandler=new SdCardHandler(contactDb, this);  
         sdHandler.execute();									// In this part all the files in the directory 
         log("Sdcard has been checked for adding new contacts");	//are checked and inserted into the database        
         settingUpTheSpinner();
@@ -138,8 +142,8 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated method stub
 				Intent intent=new Intent(MainActivity.this,GroupEditorActivity.class);
 				intent.putExtra("groupName", selectedGroup);
-				intent.putStringArrayListExtra("names", db.getNameList(selectedGroup));
-				intent.putStringArrayListExtra("phones", db.getPhoneList(selectedGroup));
+				intent.putStringArrayListExtra("names", contactDb.getNameList(selectedGroup));
+				intent.putStringArrayListExtra("phones", contactDb.getPhoneList(selectedGroup));
 				//log("Name list size is : "+Integer.toString(db.getNameList(selectedGroup).size()));
 				intent.putExtra("mode", EDIT);
 				startActivityForResult(intent, 1);
@@ -182,7 +186,7 @@ public class MainActivity extends Activity {
     	case(1):{
     		if(resultCode==Activity.RESULT_OK){ 
     			if(data.getIntExtra("mode", 0)==EDIT)
-    				db.delete(data.getExtras().getString("exgroupName"));  
+    				contactDb.delete(data.getExtras().getString("exgroupName"));  
     			if(!data.getExtras().getString("groupName").equals(""))
     				dbPumping(data.getExtras().getString("groupName"),data.getStringArrayListExtra("names"), data.getStringArrayListExtra("phones"));
     			else
@@ -195,29 +199,45 @@ public class MainActivity extends Activity {
     
 	private void sendSMS(){   		
         String text=messageText.getText().toString();
-        ArrayList<String> addrList=db.getPhoneList(selectedGroup);
+        ArrayList<String> addrList=contactDb.getPhoneList(selectedGroup);
         if(!text.equals("") && addrList.size()>0){
-	    	Intent intent=new Intent(MainActivity.this,PostMessageActivity.class);
-	    	Bundle b=new Bundle();
-	    	b.putString("message text", text);
-	    	b.putInt("messageCount", setMessageCount());
-	    	b.putInt("phoneCount", setPhoneCount());
-	    	b.putStringArrayList("phones", addrList);
-	    	b.putStringArrayList("names", db.getNameList(selectedGroup));
-	    	intent.putExtras(b);
-	    	startActivity(intent);
+        	Integer oprId = oprDb.insertOperation(text);
+        	//log("OprId: "+oprId);
+        	if(oprId != Commons.OPERATION_INSERT_FAILED){
+	        	ArrayList<String> nameList = contactDb.getNameList(selectedGroup);
+	        	for(int i=0;i< addrList.size();i++){
+	        		if(oprDb.insertStatus(oprId, selectedGroup, addrList.get(i), nameList.get(i)));
+	        		//log(addrList.get(i)+" Has been inserted");
+	        	}
+//	        	//// for log
+//	        	Cursor cursor = oprDb.getAllStatusOfOperation(oprId, true);
+//	        	do{
+//	        		log("Status Id: "+cursor.getInt(0));
+//	        	}while(cursor.moveToNext());
+//	        	////
+		    	Intent intent=new Intent(this,SendingService.class);
+		    	Bundle b=new Bundle();
+		    	b.putInt("oprId", oprId);
+		    	b.putString("message text", text);
+		    	b.putInt("messageCount", setMessageCount());
+		    	b.putInt("phoneCount", setPhoneCount());
+		    	b.putStringArrayList("phones", addrList);		    	
+		    	intent.putExtras(b);		    	
+		    	startService(intent);
+		    	log("Service started");
+        	}
         }
     }
         
     
     private void settingUpTheSpinner(){
     	phoneNumsArraySpinner=(Spinner)findViewById(R.id.phoneNumSpinner);
-        log("The number of the added groups are "+Integer.toString(db.getGroupList().size()));
-    	ArrayAdapter<String> adaptor=new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_spinner_item,db.getGroupList());
+        log("The number of the added groups are "+Integer.toString(contactDb.getGroupList().size()));
+    	ArrayAdapter<String> adaptor=new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_spinner_item,contactDb.getGroupList());
         adaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         phoneNumsArraySpinner.setAdapter(adaptor);
         phoneNumsArraySpinner.setOnItemSelectedListener(new spinnerListener());
-        if(db.isFilled()){
+        if(contactDb.isFilled()){
         	setPhoneCount();
         	editButton.setEnabled(true);
         }        	
@@ -249,7 +269,7 @@ public class MainActivity extends Activity {
     public Integer setPhoneCount(){
     	int pos=phoneNumsArraySpinner.getSelectedItemPosition();
     	selectedGroup = phoneNumsArraySpinner.getItemAtPosition(pos).toString();
-    	int count= db.getPhoneList(selectedGroup).size();
+    	int count= contactDb.getPhoneList(selectedGroup).size();
     	phoneCountLabel.setText(Integer.toString(count)+"\nشماره");
     	log(Integer.toString(count)+" is the number of the phone numbers");
     	return count;
@@ -271,7 +291,7 @@ public class MainActivity extends Activity {
     public void dbPumping(String groupName,ArrayList<String> namesList,ArrayList<String> phonesList){
     	if(namesList.size()==phonesList.size()){
     		for (int i=0;i<namesList.size();i++){
-    			db.insert(groupName, phonesList.get(i), namesList.get(i)); // here should be revised
+    			contactDb.insert(groupName, phonesList.get(i), namesList.get(i)); // here should be revised
     		}
     	}
     	 settingUpTheSpinner();
@@ -280,13 +300,15 @@ public class MainActivity extends Activity {
     @Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
-	   db.close();
+    	contactDb.close();
+    	oprDb.close();
 	   log("going to be destroyed");	
 	   super.onDestroy();
 	}
     
     private void log(String text){
-    	Log.d("Main Activity", text);
+    	if(Commons.SHOW_LOG)
+    		Log.d("Main Activity", text);
     }
 }
     

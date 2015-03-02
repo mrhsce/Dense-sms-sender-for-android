@@ -1,8 +1,11 @@
 package mrhs.ce.DenseSms.MessageLog;
 
-import mrhs.ce.DenseSms.PostMessageActivity;
+import java.util.ArrayList;
+
+import mrhs.ce.DenseSms.Commons;
 import mrhs.ce.DenseSms.R;
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,10 +13,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class LogArrayAdaptor extends ArrayAdapter<String> {
-	PostMessageActivity context;
-	public LogArrayAdaptor(PostMessageActivity ctx){
-		super(ctx,R.layout.message_report_item,ctx.phoneList);
+public class LogArrayAdaptor extends ArrayAdapter<Integer> {
+	MessageLogActivity context;	
+	ArrayList<String> nameList,phoneList;
+	ArrayList<Integer> statusList,acceptanceList;
+	
+	public LogArrayAdaptor(MessageLogActivity ctx, ArrayList<Integer> list){
+		super(ctx,R.layout.activity_log_item,list);
 		context=ctx;
 	}
 
@@ -25,6 +31,17 @@ public class LogArrayAdaptor extends ArrayAdapter<String> {
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.message_report_item, parent, false);
 		}
+		nameList = new ArrayList<String>();
+		phoneList = new ArrayList<String>();
+		statusList = new ArrayList<Integer>();
+		acceptanceList = new ArrayList<Integer>();
+		Cursor c = context.dbHandler.getAllStatusOfOperation(context.oprId,false);
+		do{
+			phoneList.add(c.getString(3));
+			nameList.add(c.getString(4));
+			statusList.add(c.getInt(5));
+			acceptanceList.add(c.getInt(6));
+		}while(c.moveToNext());
 		
 		TextView numberLabel,nameLabel,sentLabel,deliveredLabel;
 		
@@ -36,24 +53,22 @@ public class LogArrayAdaptor extends ArrayAdapter<String> {
 		
 		
 		numberLabel.setText(Integer.toString(position+1));
-		if(context.nameList.get(position).equals(""))
-			nameLabel.setText(context.phoneList.get(position));
+		if(nameList.get(position).equals(""))
+			nameLabel.setText(phoneList.get(position));
 		else
-			nameLabel.setText(context.nameList.get(position));
+			nameLabel.setText(nameList.get(position));
 		
-		if(context.sentList.get(position)==1){
+		sentLabel.setText("صبر کنید");
+		if(statusList.get(position)==Commons.MESSAGE_SENT || statusList.get(position)==Commons.MESSAGE_DELIVERED){
 			sentLabel.setText("ارسال شد");
-		}else if(context.sentList.get(position)==-1)
-			sentLabel.setText("ارسال نشد");
-		else if(context.sentList.get(position)==0)
-			sentLabel.setText("صبر کنید");
+		}else if(statusList.get(position)==Commons.MESSAGE_FAILED)
+			sentLabel.setText("ارسال نشد");					
 		
-		if(context.deliveredList.get(position)==1){
+		deliveredLabel.setText("صبر کنید");
+		if(statusList.get(position)==Commons.MESSAGE_DELIVERED){
 			deliveredLabel.setText("Delivered");
-		}else if(context.deliveredList.get(position)==-1)
-			deliveredLabel.setText("Failed");
-		else if(context.deliveredList.get(position)==0)
-			deliveredLabel.setText("صبر کنید");
+		}else if(statusList.get(position)==Commons.MESSAGE_FAILED)
+			deliveredLabel.setText("Failed");			
 		
 		log("All values are set");	
 		
