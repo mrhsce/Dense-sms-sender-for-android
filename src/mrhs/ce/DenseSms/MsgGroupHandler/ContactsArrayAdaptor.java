@@ -1,8 +1,10 @@
-package mrhs.ce.DenseSms;
+package mrhs.ce.DenseSms.MsgGroupHandler;
 
 import java.util.ArrayList;
 
 import mrhs.ce.DenseSms.R;
+import mrhs.ce.DenseSms.R.id;
+import mrhs.ce.DenseSms.R.layout;
 
 import android.content.Context;
 import android.util.Log;

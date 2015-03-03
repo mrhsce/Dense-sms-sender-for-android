@@ -1,104 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_marginLeft="10sp"
-    android:layout_marginRight="10sp"
-    android:layout_marginTop="10sp"
-    android:layout_marginBottom="10sp"
     android:layout_height="wrap_content"
+    android:layout_marginLeft="5sp"
+    android:layout_marginRight="5sp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
     android:orientation="vertical"
-    android:background="#CCCCCC" >
+    android:paddingLeft="5dp"
+    android:paddingRight="10dp" >
 
-<RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"    
+    android:orientation="horizontal"   
+    >
             
+   <TextView
+	    android:id="@+id/labelDate"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:fontFamily="bold"
+	    android:text="22/6/1393 12:30"
+	    android:textColor="#654321"
+	    android:textSize="10sp"	 
+	    android:layout_weight="1" />
+   <TextView
+        android:id="@+id/labelFailed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ناموفق: 0"
+        android:textColor="#FE4531"
+        android:textSize="10sp"
+        android:layout_weight="1"/>
+   <TextView
+       android:id="@+id/lebelDelivered"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="دریافت شده: 0"
+       android:textColor="#BADC40"
+       android:textSize="10sp"
+       android:layout_weight="1" />  
     <TextView
         android:id="@+id/labelSent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="فرستاده شده: 0"
-        android:textColor="#000088"
-        android:textSize="9sp"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_alignParentRight="true"
-        android:paddingRight="5dp"/>
-    <TextView
-       android:id="@+id/lebelDelivered"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:layout_marginTop="5dp"
-       android:layout_marginLeft="10dp"
-       android:text="دریافت شده: 0"
-       android:layout_toLeftOf="@id/labelSent"
-       android:textColor="#006600"
-       android:textSize="9sp" />      
-    <TextView
-        android:id="@+id/labelFailed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ناموفق: 0"
-        android:textColor="#880000"
-        android:textSize="9sp"
-        android:layout_marginTop="5dp"
-        android:layout_toLeftOf="@id/lebelDelivered"/> 
-    <TextView
-	    android:id="@+id/labelDate"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentLeft="true"
-	    android:fontFamily="bold"
-	    android:text="22/6/1393 12:30"
-	    android:textColor="#EB1D1D"
-	    android:textSize="13sp" />
-    
+        android:textColor="#87CEEB"
+        android:textSize="10sp"
+        android:layout_weight="1"/>    
    
-   </RelativeLayout>
-<RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-<TextView
-    android:id="@+id/labelGroupName"
-    android:layout_width="wrap_content"
+   </LinearLayout>
+<LinearLayout 
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_centerInParent="true"
-    android:fontFamily="bold"
-    android:text="گروه دوستان من"
-    android:textColor="#003433"
-    android:textSize="16sp"
-	android:layout_alignParentRight="true" />
+    android:paddingBottom="5dp"
+    android:orientation="horizontal" >
 
 <TextView
     android:id="@+id/labelCount"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_alignParentLeft="true"
-    android:layout_centerVertical="true"
     android:text="تعداد: 0"
-    android:textColor="#880000"
-    android:textSize="12sp" />
+    android:textColor="#654321"
+    android:textSize="12sp"
+    android:layout_weight="1" />
+<TextView
+    android:id="@+id/labelGroupName"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:fontFamily="bold"
+    android:text="گروه دوستان من"
+    android:textColor="#ffffff"
+    android:textSize="20sp" 
+    android:gravity="right"
+    android:layout_weight="6"/>
 
-</RelativeLayout>
-<RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+</LinearLayout>
+
+
 
 <TextView
     android:id="@+id/labelMessageText"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentLeft="true"
-    android:layout_alignParentRight="true"
     android:fontFamily="bold"
     android:gravity="right"
-    android:textColor="#000000"
+    android:textColor="#ffffff"
     android:text="سلام حالتون چطوره شما خوبید"
-    android:textSize="12sp" />
+    android:ellipsize="end"
+	android:maxLines="1"
+	android:scrollHorizontally="true"
+	android:singleLine="true"
+    android:textSize="14sp" />
 
-</RelativeLayout>
 </LinearLayout>

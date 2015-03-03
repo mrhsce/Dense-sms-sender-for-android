@@ -8,11 +8,12 @@ import mrhs.ce.DenseSms.Database.ContactDatabaseHandler;
 import mrhs.ce.DenseSms.Database.OperationDatabaseHandler;
 import mrhs.ce.DenseSms.MessageLog.MessageLogActivity;
 import mrhs.ce.DenseSms.MessageLog.MessageLogMainActivity;
+import mrhs.ce.DenseSms.MsgGroupHandler.ContactPickerMulti;
+import mrhs.ce.DenseSms.MsgGroupHandler.GroupEditorActivity;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,6 +38,8 @@ public class MainActivity extends Activity {
     Spinner phoneNumsArraySpinner;
     TextView phoneCountLabel;
     TextView messageCountLabel;
+    
+    Integer spinnerSelectedItem;
     
     //tmp
     
@@ -165,7 +168,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				Intent intent=new Intent(MainActivity.this,MessageLogActivity.class);
+				Intent intent=new Intent(MainActivity.this,AboutActivity.class);
 				startActivity(intent);
 			}
 		});
@@ -206,7 +209,7 @@ public class MainActivity extends Activity {
         	if(oprId != Commons.OPERATION_INSERT_FAILED){
 	        	ArrayList<String> nameList = contactDb.getNameList(selectedGroup);
 	        	for(int i=0;i< addrList.size();i++){
-	        		if(oprDb.insertStatus(oprId, selectedGroup, addrList.get(i), nameList.get(i)));
+	        		if(oprDb.insertStatus(oprId, selectedGroup, addrList.get(i), nameList.get(i),setMessageCount()));
 	        		//log(addrList.get(i)+" Has been inserted");
 	        	}
 //	        	//// for log
@@ -225,6 +228,11 @@ public class MainActivity extends Activity {
 		    	intent.putExtras(b);		    	
 		    	startService(intent);
 		    	log("Service started");
+		    	
+		    	// Starting multiple activities require API 11 		    	
+		    	startActivities(new Intent[]{new Intent(MainActivity.this,MessageLogMainActivity.class),
+		    			new Intent(MainActivity.this,MessageLogActivity.class).putExtra("oprId", oprId)});
+		    	messageText.getText().clear();
         	}
         }
     }
@@ -245,7 +253,8 @@ public class MainActivity extends Activity {
         	phoneCountLabel.setText("0\nشماره");
         	editButton.setEnabled(false);
         }
-        
+
+        spinnerSelectedItem = 0;        
     }
        
     
@@ -256,6 +265,7 @@ public class MainActivity extends Activity {
 				long id) {
 			// TODO Auto-generated method stub
 			log("Item "+Integer.toString(pos)+" is selected");
+			spinnerSelectedItem = pos;
 			setPhoneCount();
 		}
 
@@ -265,6 +275,13 @@ public class MainActivity extends Activity {
 			
 		}
     	
+    }
+    @Override
+    protected void onResume() {
+    	// TODO Auto-generated method stub
+    	super.onResume();
+    	phoneNumsArraySpinner.setSelection(spinnerSelectedItem);
+    	setPhoneCount();
     }
     public Integer setPhoneCount(){
     	int pos=phoneNumsArraySpinner.getSelectedItemPosition();

@@ -21,7 +21,39 @@ public class LogArrayAdaptor extends ArrayAdapter<Integer> {
 	public LogArrayAdaptor(MessageLogActivity ctx, ArrayList<Integer> list){
 		super(ctx,R.layout.activity_log_item,list);
 		context=ctx;
+		nameList = new ArrayList<String>();
+		phoneList = new ArrayList<String>();
+		statusList = new ArrayList<Integer>();
+		acceptanceList = new ArrayList<Integer>();
+		
+		Cursor c = context.dbHandler.getAllStatusOfOperation(context.oprId);
+		do{
+			phoneList.add(c.getString(3));
+			nameList.add(c.getString(4));
+			statusList.add(c.getInt(5));
+			acceptanceList.add(c.getInt(6));
+		}while(c.moveToNext());
 	}
+	
+	@Override
+	public void notifyDataSetChanged() {
+		// TODO Auto-generated method stub
+		super.notifyDataSetChanged();
+		nameList = new ArrayList<String>();
+		phoneList = new ArrayList<String>();
+		statusList = new ArrayList<Integer>();
+		acceptanceList = new ArrayList<Integer>();
+		
+		Cursor c = context.dbHandler.getAllStatusOfOperation(context.oprId);
+		do{
+			phoneList.add(c.getString(3));
+			nameList.add(c.getString(4));
+			statusList.add(c.getInt(5));
+			acceptanceList.add(c.getInt(6));
+		}while(c.moveToNext());		
+		
+	}
+	
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -30,18 +62,7 @@ public class LogArrayAdaptor extends ArrayAdapter<Integer> {
 			LayoutInflater inflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.message_report_item, parent, false);
-		}
-		nameList = new ArrayList<String>();
-		phoneList = new ArrayList<String>();
-		statusList = new ArrayList<Integer>();
-		acceptanceList = new ArrayList<Integer>();
-		Cursor c = context.dbHandler.getAllStatusOfOperation(context.oprId,false);
-		do{
-			phoneList.add(c.getString(3));
-			nameList.add(c.getString(4));
-			statusList.add(c.getInt(5));
-			acceptanceList.add(c.getInt(6));
-		}while(c.moveToNext());
+		}		
 		
 		TextView numberLabel,nameLabel,sentLabel,deliveredLabel;
 		

@@ -43,7 +43,7 @@ public class MessageLogActivity extends Activity {
 		oprId = getIntent().getExtras().getInt("oprId");
 		log("OprId: "+oprId);
 		
-		Cursor c = dbHandler.getAllStatusOfOperation(oprId,true);
+		Cursor c = dbHandler.getAllStatusOfOperation(oprId);
 		do{
 			statusIdList.add(c.getInt(0));
 		}while(c.moveToNext());
@@ -67,7 +67,7 @@ public class MessageLogActivity extends Activity {
 	
 	public void update(){
 		Integer sentCount = 0,deliveredCount = 0,failedCount = 0;
-		Cursor c =dbHandler.getAllStatusOfOperation(oprId,true);
+		Cursor c =dbHandler.getAllStatusOfOperation(oprId);
 		do{
 			if(c.getInt(5) == Commons.MESSAGE_SENT){
 				sentCount++;

@@ -14,7 +14,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class OperationDatabaseHandler {
-	private static  int DATABASE_VERSION=2;
 	private static final String DATABASE_NAME = "denseSMS";
 	private static final String OPERATION_TABLE_NAME = "operations";
 	private static final String STATUS_TABLE_NAME = "status";
@@ -39,7 +38,10 @@ public class OperationDatabaseHandler {
 		
 	public Integer insertOperation(String message){ // if successful returns id else returns fail code
 		ContentValues values=new ContentValues();
-		values.put("msgtxt", message);		
+		values.put("msgtxt", message);	
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+		Date date = new Date();			        
+		values.put("created_at",dateFormat.format(date));
 		try{
 			if(db.insert(OPERATION_TABLE_NAME, null, values)>0){	
 				Cursor cursor=db.query(OPERATION_TABLE_NAME, new String[]{"oprId"}, null, null, null, null, "oprId desc");
@@ -55,13 +57,20 @@ public class OperationDatabaseHandler {
 		}
 	}
 	
-	public boolean insertStatus(Integer oprId,String groupName,String phoneNum,String name){
+	public boolean insertStatus(Integer oprId,String groupName,String phoneNum,String name,Integer msgCount){
 		ContentValues values=new ContentValues();
 		values.put("oprId",oprId);
 		values.put("groupName",groupName);
 		values.put("phoneNum", phoneNum);
 		values.put("status",Commons.MESSAGE_PENDING);
 		values.put("acceptance",Commons.RESPONSE_NOT_ANSWERED);
+		values.put("msgCount",msgCount);
+		values.put("sentCount", 0);
+		values.put("deliveredCount", 0);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+		Date date = new Date();
+			        
+		values.put("stat_at",dateFormat.format(date));
 		if(name!=null)
 			values.put("name", name);
 		try{
@@ -91,13 +100,42 @@ public class OperationDatabaseHandler {
 		}return null;
 	}
 	
-	public boolean updateStatus(Integer id,boolean conditionType,int condition){
+	// for the response 
+	//if both success and sentOrDelivered are true --> Response accepted
+	//if success is true but sentorDelivered is false --> response rejected
+	//if success is false --> Response invalid
+	public boolean updateStatus(Integer id,boolean messageOrRespond,boolean success,boolean sentOrDelivered){
 		ContentValues values=new ContentValues();
-		if(conditionType==Commons.MESSAGE_CONDITION){			
-			values.put("status",condition);			
+		if(messageOrRespond){
+			Cursor c = getAllDetailsOfStatus(id);
+			if(success && c.getInt(5) != Commons.MESSAGE_FAILED){
+				if(sentOrDelivered){
+					//When the message has been sent
+					if(c.getInt(2) == c.getInt(3)+1 )
+						values.put("status",Commons.MESSAGE_SENT);
+					else
+						values.put("sentCount", c.getInt(3)+1);					
+				}
+				else{
+					// When the message has been delivered
+					if(c.getInt(2) == c.getInt(4)+1)
+						values.put("status",Commons.MESSAGE_DELIVERED);
+					else
+						values.put("deliveredCount", c.getInt(4)+1);	
+				}
+			}
+			else						
+				values.put("status",Commons.MESSAGE_FAILED);			
 		}
 		else{
-			values.put("acceptance",condition);
+			// Response to the message should be implemented here
+			if(success)
+				if(sentOrDelivered)
+					values.put("acceptance",Commons.RESPONSE_ACCEPTED);
+				else
+					values.put("acceptance",Commons.RESPONSE_REJECTED);
+			else
+				values.put("acceptance",Commons.RESPONSE_INVALID);
 		}
 		// Getting the current time and formating it
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -108,33 +146,38 @@ public class OperationDatabaseHandler {
 		
 	}
 	
-	boolean ascending = true;
-	public Cursor getAllStatusOfOperation(Integer oprId,boolean order){
+	public Cursor getAllStatusOfOperation(Integer oprId){
 		Cursor cursor;
-		if(order == ascending)
-			cursor=db.query(STATUS_TABLE_NAME, new String[]{"id","oprId","groupName","phoneNum","name","status","acceptance","stat_at"}, "oprId = "+Integer.toString(oprId), null, null, null, "id asc");
-		else
-			cursor=db.query(STATUS_TABLE_NAME, new String[]{"id","oprId","groupName","phoneNum","name","status","acceptance","stat_at"}, "oprId = "+Integer.toString(oprId), null, null, null, "stat_at desc");		if(cursor != null){
+		cursor=db.query(STATUS_TABLE_NAME, new String[]{"id","oprId","groupName","phoneNum","name","status","acceptance","stat_at"}, "oprId = "+Integer.toString(oprId), null, null, null, "id asc");
+		if(cursor != null){
 			cursor.moveToFirst();
 			return cursor;
 		}return null;		
-	}	
+	}
 	
-//	public Cursor getAllDetailsOfStatus(Integer id){
-//		Cursor cursor;
-//		if(type == ascending)
-//			cursor=db.query(STATUS_TABLE_NAME, new String[]{"id","oprId","groupName","phoneNum","name","status","acceptance","stat_at"}, "id = "+Integer.toString(id), null, null, null, "id asc");
-//		else
-//			cursor=db.query(STATUS_TABLE_NAME, new String[]{"id","oprId","groupName","phoneNum","name","status","acceptance","stat_at"}, "id = "+Integer.toString(id), null, null, null, "stat_at desc");				
-//		if(cursor != null){
-//			cursor.moveToFirst();
-//			return cursor;
-//		}return null;		
-//	}
+	public Integer getAllStatusOfOperationByNumber(Integer oprId,Integer num){
+		Cursor cursor;
+		cursor=db.query(STATUS_TABLE_NAME, new String[]{"id","oprId"}, "oprId = "+Integer.toString(oprId), null, null, null, "id asc");
+		if(cursor.moveToPosition(num)){
+			return cursor.getInt(0);
+		}return null;		
+	}		 
+	
+	public Cursor getAllDetailsOfStatus(Integer id){
+		Cursor cursor;
+		cursor=db.query(STATUS_TABLE_NAME, new String[]{"id",
+				"oprId","msgCount","sentCount","deliveredCount","status","acceptance","groupName","phoneNum",
+				"name","stat_at"}, "id = "+
+				Integer.toString(id), null, null, null, null);
+		if(cursor != null){
+			cursor.moveToFirst();
+			return cursor;
+		}return null;		
+	}
 	
 	public boolean deleteOperation(Integer oprId){
 		// Delete the operation as well as all the related status
-		Cursor cursor=getAllStatusOfOperation(oprId,true);
+		Cursor cursor=getAllStatusOfOperation(oprId);
 		do{
 			db.delete(OPERATION_TABLE_NAME, "id = "+Integer.toString(cursor.getInt(0)), null);
 		}while(cursor.moveToNext());
@@ -144,32 +187,13 @@ public class OperationDatabaseHandler {
 	private static class DbHelper extends SQLiteOpenHelper{
 		
 		public DbHelper(Context context){
-			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+			super(context, DATABASE_NAME, null, Commons.DATABASE_VERSION);
 			log("The database has been initialized");
 		}
 	
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			// TODO Auto-generated method stub
-			String OPERATION_CREATE_DATABASE="CREATE TABLE IF NOT EXISTS "+OPERATION_TABLE_NAME+ 
-					" ( oprId INTEGER PRIMARY KEY," +
-						"msgtxt  text NOT NULL," +
-							"created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)";
-			String STATUS_CREATE_DATABASE="CREATE TABLE IF NOT EXISTS "+STATUS_TABLE_NAME+
-											"(id INTEGER PRIMARY KEY," +
-											"oprId int(10) NOT NULL," +
-											"groupName varchar(40) NOT NULL," +
-											"name varchar(30)," +
-											"phoneNum varchar(13) NOT NULL," +
-											"status int(1) NOT NULL," +
-											"acceptance int(1),"+
-											"stat_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
-											"foreign key(oprId) REFERENCES " +OPERATION_TABLE_NAME+
-											"(oprId))";
-					
-			db.execSQL(OPERATION_CREATE_DATABASE);
-			db.execSQL(STATUS_CREATE_DATABASE);
-			log("Both Databse schematics has been craeted");
+			// TODO Auto-generated method stub	
 		}
 	
 		@Override

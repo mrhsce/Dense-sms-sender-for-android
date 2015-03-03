@@ -34,17 +34,19 @@ public class MessageLogMainActivity extends Activity {
 		
 		// Getting all the operation details
 		Cursor cursor = dbHandler.getAllOperations();
-		do{
-			oprIdList.add(cursor.getInt(0));
-			oprMsgList.add(cursor.getString(1));
-			oprDateList.add(cursor.getString(2));
-			log("The array size is: "+Integer.toString(oprIdList.size()));
-		}while(cursor.moveToNext());
+		if(cursor.moveToFirst()){
+			do{
+				oprIdList.add(cursor.getInt(0));
+				oprMsgList.add(cursor.getString(1));
+				oprDateList.add(cursor.getString(2));
+				log("The array size is: "+Integer.toString(oprIdList.size()));
+			}while(cursor.moveToNext());
+		}
 		setContentView(R.layout.activity_message_log_main);
 		mainList = (ListView)findViewById(R.id.listMainLog);
 		listAdaptor = new MainLogArrayAdaptor(this,oprIdList);
 		mainList.setAdapter(listAdaptor);
-		mainList.setDividerHeight(10); 
+		mainList.setDividerHeight(2); 
 		mainList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapter, View view,int position, long id){

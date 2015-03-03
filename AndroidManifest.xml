@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="mrhs.ce.DenseSms"
     android:installLocation="preferExternal"
-    android:versionCode="7"
-    android:versionName="1.4.2" >
+    android:versionCode="8"
+    android:versionName="1.6.2" >
 
     <uses-sdk
-        android:minSdkVersion="9"
+        android:minSdkVersion="14"
         android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.SEND_SMS" />
@@ -29,17 +29,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="mrhs.ce.DenseSms.PostMessageActivity"
-            android:label="@string/title_activity_on_message_sent"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="mrhs.ce.DenseSms.ContactPickerMulti"
+            android:name="mrhs.ce.DenseSms.MsgGroupHandler.ContactPickerMulti"
             android:label="title_activity_contact_picker_multi"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="mrhs.ce.DenseSms.GroupEditorActivity"
+         	android:name="mrhs.ce.DenseSms.MsgGroupHandler.GroupEditorActivity"
             android:label="@string/title_activity_edit_group"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan" >

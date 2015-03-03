@@ -34,7 +34,7 @@ public class MainLogArrayAdaptor extends ArrayAdapter<Integer> {
 		}			
 		
 		Integer sentCount = 0,deliveredCount = 0,failedCount = 0,count = 0;
-		Cursor c = context.dbHandler.getAllStatusOfOperation(oprIdList.get(position),true);
+		Cursor c = context.dbHandler.getAllStatusOfOperation(oprIdList.get(position));
 		do{
 			count++;
 			if(c.getInt(5) == Commons.MESSAGE_SENT){
@@ -59,11 +59,11 @@ public class MainLogArrayAdaptor extends ArrayAdapter<Integer> {
 		TextView countView   =(TextView) convertView.findViewById(R.id.labelCount);
 		TextView messageView   =(TextView) convertView.findViewById(R.id.labelMessageText);
 		
-		sentView.setText(Integer.toString(sentCount));
-		deliveredView.setText(Integer.toString(deliveredCount));
-		failedView.setText(Integer.toString(failedCount));
+		sentView.setText("فرستاده شده:  "+Integer.toString(sentCount));
+		deliveredView.setText("دریافت شده:  "+Integer.toString(deliveredCount));
+		failedView.setText("ناموفق:  "+Integer.toString(failedCount));
 		groupNameView.setText(groupName);
-		countView.setText(Integer.toString(count));
+		countView.setText("تعداد:  "+Integer.toString(count));
 		dateView.setText(context.oprDateList.get(position));
 		messageView.setText(context.oprMsgList.get(position));
 		

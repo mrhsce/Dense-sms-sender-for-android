@@ -1,6 +1,8 @@
 package mrhs.ce.DenseSms.Database;
 import java.util.ArrayList;
 
+import mrhs.ce.DenseSms.Commons;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -10,11 +12,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 
-public class ContactDatabaseHandler {
-	
-	private static  int DATABASE_VERSION=2;
-	private static final String DATABASE_NAME = "denseSMS";
+public class ContactDatabaseHandler {	
 	private static final String TABLE_NAME = "contactGroups";
+	private static final String OPERATION_TABLE_NAME = "operations";
+	private static final String STATUS_TABLE_NAME = "status";
 	
 	private DbHelper dbHelper;
 	private  SQLiteDatabase db;
@@ -137,7 +138,7 @@ public class ContactDatabaseHandler {
 	private static class DbHelper extends SQLiteOpenHelper{
 					
 		public DbHelper(Context context){
-			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+			super(context, Commons.DATABASE_NAME, null, Commons.DATABASE_VERSION);
 			log("The database has been initialized");
 		}
 	
@@ -146,8 +147,29 @@ public class ContactDatabaseHandler {
 			// TODO Auto-generated method stub
 			String CREATE_DATABASE="CREATE TABLE "+TABLE_NAME+ 
 					" ( groupName text,phoneNum varchar(13), name text, primary key(groupName,phoneNum))";
+			String OPERATION_CREATE_DATABASE="CREATE TABLE IF NOT EXISTS "+OPERATION_TABLE_NAME+ 
+					" ( oprId INTEGER PRIMARY KEY," +
+						"msgtxt  text NOT NULL," +
+							"created_at DATETIME NOT NULL)";
+			String STATUS_CREATE_DATABASE="CREATE TABLE IF NOT EXISTS "+STATUS_TABLE_NAME+
+											"(id INTEGER PRIMARY KEY," +
+											"oprId INTEGER NOT NULL," +
+											"groupName varchar(40) NOT NULL," +
+											"name varchar(30)," +
+											"phoneNum varchar(13) NOT NULL," +
+											"status int(1) NOT NULL," +
+											"acceptance int(1)," +
+											"msgCount int(2) NOT NULL," +
+											"sentCount int(2) NOT NULL," +
+											"deliveredCount int(2) NOT NULL,"+
+											"stat_at DATETIME NOT NULL," +
+											"foreign key(oprId) REFERENCES " +OPERATION_TABLE_NAME+
+											"(oprId))";
+					
+			db.execSQL(OPERATION_CREATE_DATABASE);
+			db.execSQL(STATUS_CREATE_DATABASE);
 			db.execSQL(CREATE_DATABASE);
-			log("Databse schematic has been craeted");
+			log("All three Databse schematics has been craeted");
 		}
 	
 		@Override
@@ -159,6 +181,7 @@ public class ContactDatabaseHandler {
 		
 	}
 	private static void log(String message){
-		Log.d("ContactDbHelper",message);
+		if(Commons.SHOW_LOG)
+			Log.d("ContactDbHelper",message);
 	}
 }

@@ -19,15 +19,14 @@ import android.util.Log;
 
 public class SendingService extends Service {
 
-	ArrayList<BroadcastReceiver> sendBroadcastReciever,deliveryBroadcastReciever ;
+	ArrayList<ArrayList<BroadcastReceiver>> sendBroadcastReciever,deliveryBroadcastReciever ;
 	
     Integer messageCount,phoneCount,oprId;
     
     ArrayList<String> phoneList;
-	ArrayList<Integer> sentList,deliveredList,statusIdList;
-	OperationDatabaseHandler db;
+	ArrayList<Integer> statusIdList;
+	OperationDatabaseHandler db;	
 	
-	ArrayList<ArrayList<Boolean>> sendCondition,deliveredCondition;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -40,22 +39,15 @@ public class SendingService extends Service {
 		oprId = intent.getIntExtra("oprId", -1);
 		
 		db = new OperationDatabaseHandler(this).open();
-				
+			
+		sendBroadcastReciever = new ArrayList<ArrayList<BroadcastReceiver>>();
+		deliveryBroadcastReciever = new ArrayList<ArrayList<BroadcastReceiver>>();
+		
 		statusIdList = new ArrayList<Integer>();
-		Cursor c = db.getAllStatusOfOperation(oprId,true);
+		Cursor c = db.getAllStatusOfOperation(oprId);
 		do{
 			statusIdList.add(c.getInt(0));
-		}while(c.moveToNext());
-		sentList=new ArrayList<Integer>();
-		deliveredList=new ArrayList<Integer>();
-		sendCondition=new ArrayList<ArrayList<Boolean>>();
-		deliveredCondition=new ArrayList<ArrayList<Boolean>>();
-		for(String i:phoneList){
-			sentList.add(0);
-			deliveredList.add(0);
-			sendCondition.add(new ArrayList<Boolean>());
-			deliveredCondition.add(new ArrayList<Boolean>());
-		}
+		}while(c.moveToNext());		
 		sendMessage(intent.getExtras().getString("message text"),phoneList);
 		return Service.START_NOT_STICKY;
 	}
@@ -70,8 +62,8 @@ public class SendingService extends Service {
         ArrayList<ArrayList<PendingIntent>> deliveredPI = new ArrayList<ArrayList<PendingIntent>>(); //
         
         ArrayList<String> mesgParts= sms.divideMessage(text);
-        sendBroadcastReciever=new ArrayList<BroadcastReceiver>();
-        deliveryBroadcastReciever=new ArrayList<BroadcastReceiver>();
+        sendBroadcastReciever.add(new ArrayList<BroadcastReceiver>());
+        deliveryBroadcastReciever.add(new ArrayList<BroadcastReceiver>());
                 
         for (int i=0 ; i<phoneCount; i++){
         	sentPI.add(new ArrayList<PendingIntent>());
@@ -79,11 +71,11 @@ public class SendingService extends Service {
         	
         	for(int j=0;j<messageCount;j++){ 
         		
-        		sendBroadcastReciever.add(new sentReciever());
-            	deliveryBroadcastReciever.add(new deliverReciever());
+        		sendBroadcastReciever.get(sendBroadcastReciever.size()-1).add(new sentReciever());
+            	deliveryBroadcastReciever.get(sendBroadcastReciever.size()-1).add(new deliverReciever());
             	
-            	registerReceiver(sendBroadcastReciever.get(i), new IntentFilter(SENT+Integer.toString(i)+"."+Integer.toString(j)));
-                registerReceiver(deliveryBroadcastReciever.get(i), new IntentFilter(DELIVERED+Integer.toString(i)+"."+Integer.toString(j)));
+            	registerReceiver(sendBroadcastReciever.get(sendBroadcastReciever.size()-1).get(i), new IntentFilter(SENT+Integer.toString(i)+"."+Integer.toString(j)));
+                registerReceiver(deliveryBroadcastReciever.get(sendBroadcastReciever.size()-1).get(i), new IntentFilter(DELIVERED+Integer.toString(i)+"."+Integer.toString(j)));
 	        	sentPI.get(i).add(PendingIntent.getBroadcast(this, 0, new Intent(SENT+Integer.toString(i)+"."+Integer.toString(j)), 0));
 	        	deliveredPI.get(i).add(PendingIntent.getBroadcast(this, 0, new Intent(DELIVERED+Integer.toString(i)+"."+Integer.toString(j)),0));
         	}  
@@ -111,11 +103,12 @@ public class SendingService extends Service {
 	class sentReciever extends BroadcastReceiver{
 		@Override
 		public void onReceive(Context arg0, Intent intent) {
+			Boolean sentMessage = true;
 			// TODO Auto-generated method stub
 			switch(getResultCode()){
 			case Activity.RESULT_OK:				
 				log("Sms was sent + id : "+intent.getAction());				
-				getRespond(sentMessage, intent.getAction(), true);
+				getRespond(sentMessage , intent.getAction(), true);
 				break;
 			case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
 				log("Generic failure");
@@ -140,11 +133,12 @@ public class SendingService extends Service {
 	class deliverReciever extends BroadcastReceiver{
     	@Override
     	public void onReceive(Context arg0, Intent intent) {
-    		// TODO Auto-generated method stub
+    		Boolean deliveredMessage = false;
+			// TODO Auto-generated method stub
     		switch(getResultCode()){
     			case Activity.RESULT_OK:
     				log("Sms was delivered + id : "+intent.getAction());
-    				getRespond(deliveredMessage, intent.getAction(), true);
+    				getRespond(deliveredMessage , intent.getAction(), true);
     				break;
     			case Activity.RESULT_CANCELED:
     				getRespond(deliveredMessage, intent.getAction(), false);
@@ -154,92 +148,27 @@ public class SendingService extends Service {
     	}
     }
 	
-	final int deliveredMessage=10;
-	final int sentMessage=11;
-	
-	private void getRespond(int type,String place,boolean success){
+		
+	private void getRespond(Boolean sentOrDelivered,String place,boolean success){
 		int position=Integer.parseInt(place.split("\\*")[1].split("\\.")[0]);
-		int intentOprId = Integer.parseInt(place.split("_")[1].split("\\*")[0]);
-		//log("The beginning position : "+Integer.toString(position));
-		//log("Size of sent condition"+Integer.toString(sendCondition.size()));
-		//log("Size of sent list"+Integer.toString(sentList.size()));
-		//*************************************Very important when new message is sent all the previous
-		//*****************************************broadcast are ignored
-		if(oprId == intentOprId){
-			if(type==deliveredMessage){
-				if(success){
-					deliveredCondition.get(position).add(true);
-					//log("true added to the deliveredCondition");
-				}
-				else{
-					deliveredCondition.get(position).add(false);
-					//log("false added to the deliveredCondition");
-				}
-				if(deliveredCondition.get(position).size()==messageCount){
-					//log("messageCount has reached");
-					boolean cond=true;
-					for(int i=0;i<deliveredCondition.get(position).size();i++){
-						if(!deliveredCondition.get(position).get(i)){
-							cond=false;
-							break;
-						}
-					}
-					if(cond){						
-						db.updateStatus(statusIdList.get(position), 
-								Commons.MESSAGE_CONDITION, Commons.MESSAGE_DELIVERED);
-						sendBroadcast(new Intent("smsReport").putExtra("oprId", oprId));
-						log("another message has been delivered");
-					}
-					else{						
-						db.updateStatus(statusIdList.get(position), 
-								Commons.MESSAGE_CONDITION, Commons.MESSAGE_FAILED);
-						sendBroadcast(new Intent("smsReport").putExtra("oprId", oprId));
-						log("another message has been failed");
-					}
-				}
-			}
-			if(type==sentMessage){
-				if(success){
-					sendCondition.get(position).add(true);
-					//log("true added to the sentCondition");
-				}
-				else{
-					sendCondition.get(position).add(false);
-					//log("false added to the sentCondition");
-				}			
-				if(sendCondition.get(position).size()==messageCount){
-					//log("messageCount has reached");
-					boolean cond=true;
-					for(int i=0;i<sendCondition.get(position).size();i++){
-						if(!sendCondition.get(position).get(i)){
-							cond=false;
-							break;
-						}
-					}
-					if(cond){						
-						db.updateStatus(statusIdList.get(position), 
-								Commons.MESSAGE_CONDITION, Commons.MESSAGE_SENT);
-						sendBroadcast(new Intent("smsReport").putExtra("oprId", oprId));
-						log("another message has been sent");
-					}
-					else{						
-						db.updateStatus(statusIdList.get(position), 
-								Commons.MESSAGE_CONDITION, Commons.MESSAGE_FAILED);
-						sendBroadcast(new Intent("smsReport").putExtra("oprId", oprId));
-						log("another message has not been sent");
-					}
-				}
-			}
-		}
+		int intentOprId = Integer.parseInt(place.split("_")[1].split("\\*")[0]);		
+		
+		db.updateStatus(db.getAllStatusOfOperationByNumber(intentOprId, position),
+				true, success, sentOrDelivered);
+		sendBroadcast(new Intent("smsReport").putExtra("oprId", oprId));
+		log("another message has been delivered");			
 	}
+
 	
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
 		try{
-			for(int i=0;i<messageCount*phoneCount;i++){
-	    		unregisterReceiver(sendBroadcastReciever.get(i));
-	    		unregisterReceiver(deliveryBroadcastReciever.get(i));
+			for(int i=0;i<sendBroadcastReciever.size();i++){
+				for(int j=0;j<sendBroadcastReciever.get(i).size();j++){
+					unregisterReceiver(sendBroadcastReciever.get(i).get(j));
+		    		unregisterReceiver(deliveryBroadcastReciever.get(i).get(j));
+				}
 			}
     		log(" both broadcast recievers are unregistered");
     	}catch(Exception e){

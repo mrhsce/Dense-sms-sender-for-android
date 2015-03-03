@@ -20,7 +20,10 @@
         android:id="@+id/messageTextView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:gravity="right"
+        android:background="@drawable/message_box"
+        android:padding="5dp"
+        android:layout_marginBottom="5dp"
         android:text="@string/hello_world" />
     <TextView
 	    android:id="@+id/sentCountLabel"
