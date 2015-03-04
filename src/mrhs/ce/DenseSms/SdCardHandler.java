@@ -76,7 +76,7 @@ public class SdCardHandler {
     }
 	private ArrayList<ArrayList<ArrayList<String>>> getTextFileContents(ArrayList<String> addrList){ // returns the contents of the text files based on the names list
     	
-    	ArrayList<ArrayList<ArrayList<String>>> phoneList=new ArrayList<ArrayList<ArrayList<String>>>();
+    	ArrayList<ArrayList<ArrayList<String>>> phoneList=new ArrayList<ArrayList<ArrayList<String>>>();    	
     	for(int i=0 ; i<addrList.size() ; i++){
     		phoneList.add(new ArrayList<ArrayList<String>>());
     		File file=new File(Environment.getExternalStorageDirectory().toString()+
@@ -86,14 +86,18 @@ public class SdCardHandler {
     			String line;
     			int counter=0;
     			while ((line=br.readLine())!= null){
+    				line.replaceAll("\\t+"," ");
+    				line.replaceAll("\\s+"," ");
     				if(line.split("[ \t]+")[0].matches("(\\+98|0)[0-9]{10}")){
     					phoneList.get(i).add(new ArrayList<String>());
     					phoneList.get(i).get(counter).add(line.split("[ \t]+")[0]);
-    					if(line.split("[ \t]+").length>1)
-    						phoneList.get(i).get(counter).add(line.split("[ \t]+")[1]);
-    					else
-    						phoneList.get(i).get(counter).add("");
-    					counter++;
+    					String tmpStr = "";
+						for(int j=1;j<line.split("[ \t]+").length;j++){
+							tmpStr += line.split("[ \t]+")[j] + " ";
+						}
+						phoneList.get(i).get(counter).add(tmpStr.trim());
+    					
+						counter++;
     				}
     			}
     			br.close();

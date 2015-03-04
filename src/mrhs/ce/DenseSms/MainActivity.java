@@ -280,8 +280,10 @@ public class MainActivity extends Activity {
     protected void onResume() {
     	// TODO Auto-generated method stub
     	super.onResume();
-    	phoneNumsArraySpinner.setSelection(spinnerSelectedItem);
-    	setPhoneCount();
+    	if(spinnerSelectedItem != 0){
+	    	phoneNumsArraySpinner.setSelection(spinnerSelectedItem);
+	    	setPhoneCount();
+    	}
     }
     public Integer setPhoneCount(){
     	int pos=phoneNumsArraySpinner.getSelectedItemPosition();

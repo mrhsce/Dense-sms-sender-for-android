@@ -11,7 +11,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.os.Handler;
 import android.os.IBinder;
 import android.telephony.SmsManager;
@@ -23,10 +22,22 @@ public class SendingService extends Service {
 	
     Integer messageCount,phoneCount,oprId;
     
-    ArrayList<String> phoneList;
-	ArrayList<Integer> statusIdList;
-	OperationDatabaseHandler db;	
+    ArrayList<String> phoneList;	
+	OperationDatabaseHandler db;
 	
+	Integer waitingTime;
+	boolean timerCounting;
+	
+	@Override
+	public void onCreate() {
+		// TODO Auto-generated method stub
+		super.onCreate();
+		waitingTime = 0;
+		timerCounting = false;
+		db = new OperationDatabaseHandler(this).open();
+		sendBroadcastReciever = new ArrayList<ArrayList<BroadcastReceiver>>();
+		deliveryBroadcastReciever = new ArrayList<ArrayList<BroadcastReceiver>>();
+	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -36,18 +47,9 @@ public class SendingService extends Service {
 		
 		messageCount=intent.getIntExtra("messageCount", 0);
 		phoneCount=intent.getIntExtra("phoneCount", 0);
-		oprId = intent.getIntExtra("oprId", -1);
+		oprId = intent.getIntExtra("oprId", -1);				
 		
-		db = new OperationDatabaseHandler(this).open();
-			
-		sendBroadcastReciever = new ArrayList<ArrayList<BroadcastReceiver>>();
-		deliveryBroadcastReciever = new ArrayList<ArrayList<BroadcastReceiver>>();
 		
-		statusIdList = new ArrayList<Integer>();
-		Cursor c = db.getAllStatusOfOperation(oprId);
-		do{
-			statusIdList.add(c.getInt(0));
-		}while(c.moveToNext());		
 		sendMessage(intent.getExtras().getString("message text"),phoneList);
 		return Service.START_NOT_STICKY;
 	}
@@ -79,7 +81,7 @@ public class SendingService extends Service {
 	        	sentPI.get(i).add(PendingIntent.getBroadcast(this, 0, new Intent(SENT+Integer.toString(i)+"."+Integer.toString(j)), 0));
 	        	deliveredPI.get(i).add(PendingIntent.getBroadcast(this, 0, new Intent(DELIVERED+Integer.toString(i)+"."+Integer.toString(j)),0));
         	}  
-        	if(i==0)
+        	if(i==0 && waitingTime == 0)
         	sms.sendMultipartTextMessage(phoneNumbers.get(i), null, mesgParts, sentPI.get(i), deliveredPI.get(i));
         	else{
         		final SmsManager INsms=sms;
@@ -94,11 +96,32 @@ public class SendingService extends Service {
 						// TODO Auto-generated method stub
 						INsms.sendMultipartTextMessage(INphoneNumbers.get(INi), null, INmesgParts, INsentPI.get(INi), INdeliveredPI.get(INi));
 					}
-				}, Commons.MESSAGE_INTERVAL*messageCount*INi);
+				}, Commons.MESSAGE_INTERVAL*messageCount*INi+waitingTime);
         	}
-        }       
+        } 
+        waitingTime += Commons.MESSAGE_INTERVAL*messageCount*phoneCount+1;
+        if(!timerCounting){
+        	timerCounting = true;
+        	timer();
+        }
 	}	
 	
+	public void timer(){
+		if(waitingTime != 0){
+			waitingTime--;
+			new Handler().postDelayed(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+				timer();	
+				}
+			}, 1000);
+		}
+		else{
+			timerCounting = false;
+		}
+	}
 	
 	class sentReciever extends BroadcastReceiver{
 		@Override

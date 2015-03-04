@@ -30,8 +30,8 @@ Things to do ->
 	Third phase:	
 	- ✔ In the manual maker take care of the focus(returning to its place) and also not to focus edit text
 	- ✔ see if the broadcast recievers and intents stop when closing the activity they are created and if it is so think about
-	 	and do sth that in all condition closed and open the program continues looking for sent , delivery , incoming
-	  	messages(use application or service if needed)	
+	 		and do sth that in all condition closed and open the program continues looking for sent , delivery , incoming
+	  			messages(use application or service if needed)	
 	- ✔ when editing a group and returning the edited group should be selected 
 	- ✔ Adding two database one for message details and the other for the numbers and the status
 	- ✔ In the beginning and after the send button is pressed the message log list is shown here only brief information like 
@@ -39,7 +39,9 @@ Things to do ->
 				information each of these should be clicked
 	- ✔ add button for accessing the message log from the main menu
 	- ✔ show detail about the success of a message (it means you don't have to watch and wait in the post message activity
-	- ✔ Design message sent history 
+	- ✔ Design message sent history
+	- ✔ Solve the problem of sending several operatoin failing in the service add some delay to the next series 
+			and reduce it every second 
 	
 	Fourth phase:
 	- Design the date converter class for converting the date from Gregorian to Jalali

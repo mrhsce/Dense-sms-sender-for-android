@@ -3,7 +3,7 @@
     package="mrhs.ce.DenseSms"
     android:installLocation="preferExternal"
     android:versionCode="8"
-    android:versionName="1.6.2" >
+    android:versionName="1.6.5" >
 
     <uses-sdk
         android:minSdkVersion="14"
