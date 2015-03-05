@@ -99,7 +99,7 @@ public class SendingService extends Service {
 				}, Commons.MESSAGE_INTERVAL*messageCount*INi+waitingTime);
         	}
         } 
-        waitingTime += Commons.MESSAGE_INTERVAL*messageCount*phoneCount+1;
+        waitingTime += Commons.MESSAGE_INTERVAL*messageCount*phoneCount;
         if(!timerCounting){
         	timerCounting = true;
         	timer();

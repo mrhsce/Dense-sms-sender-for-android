@@ -45,6 +45,7 @@ Things to do ->
 	
 	Fourth phase:
 	- Design the date converter class for converting the date from Gregorian to Jalali
+	- Add search feature to the contact list maker
 	- before sending there should be a check button that when this check button is ticked after sending the messages listens 
 		for the specific respond from the audience(like 0 or 1) and then base on that adds another status to the 
 		numbers(accepted or rejected or not answered) and this will be added to the filters- this message should also 
@@ -58,6 +59,8 @@ Things to do ->
 	- an option in the main activity menu to force stop the service by user
 	- a mechanism that the service stops itself after being informed about the delivery report of all messages or 
 		finishing timeout after the last received report
+	- Add sim card choice to the main activity for when the device has two sim card(this option should be disabled
+		when the device has only one)	
 	- optimizing the service
 	- make notification for the last series of sent messages and how to change it without informing the user
 		 of a new notification	and an option to deactivate it
